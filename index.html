@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ARCHITECT.UI | Digital Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#8ff5ff",
+              "on-tertiary-container": "#53575c",
+              "primary-fixed-dim": "#00deec",
+              "secondary": "#ac8aff",
+              "on-secondary": "#280067",
+              "surface-container-low": "#10131a",
+              "tertiary-fixed": "#f3f7fd",
+              "on-secondary-container": "#d9c8ff",
+              "primary": "#8ff5ff",
+              "tertiary": "#f6f9ff",
+              "primary-fixed": "#00eefc",
+              "on-tertiary": "#5b5f65",
+              "primary-container": "#00eefc",
+              "tertiary-fixed-dim": "#e5e8ee",
+              "secondary-fixed-dim": "#ceb9ff",
+              "surface-container-high": "#1c2028",
+              "surface-dim": "#0b0e14",
+              "secondary-container": "#5516be",
+              "error-container": "#9f0519",
+              "inverse-primary": "#006a71",
+              "on-primary-fixed": "#003f43",
+              "primary-dim": "#00deec",
+              "on-secondary-fixed-variant": "#5f28c8",
+              "on-primary-fixed-variant": "#005e64",
+              "inverse-on-surface": "#52555c",
+              "on-surface": "#ecedf6",
+              "surface-variant": "#22262f",
+              "background": "#0b0e14",
+              "on-surface-variant": "#a9abb3",
+              "on-tertiary-fixed": "#474c51",
+              "outline": "#73757d",
+              "on-error-container": "#ffa8a3",
+              "surface-container-highest": "#22262f",
+              "surface-container": "#161a21",
+              "secondary-fixed": "#dac9ff",
+              "inverse-surface": "#f9f9ff",
+              "on-background": "#ecedf6",
+              "on-primary-container": "#005359",
+              "tertiary-container": "#e7ebf1",
+              "surface-bright": "#282c36",
+              "on-primary": "#005d63",
+              "surface": "#0b0e14",
+              "on-secondary-fixed": "#40009b",
+              "secondary-dim": "#8455ef",
+              "tertiary-dim": "#e5e8ee",
+              "surface-container-lowest": "#000000",
+              "on-tertiary-fixed-variant": "#64686e",
+              "on-error": "#490006",
+              "error": "#ff716c",
+              "outline-variant": "#45484f",
+              "error-dim": "#d7383b"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0b0e14;
+            color: #ecedf6;
+            font-family: 'Manrope', sans-serif;
+            cursor: none;
+            overflow-x: hidden;
+        }
+        .custom-cursor {
+            width: 40px;
+            height: 40px;
+            border: 1.5px solid rgba(143, 245, 255, 0.5);
+            background-color: transparent;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1), 
+                        height 0.3s cubic-bezier(0.23, 1, 0.32, 1), 
+                        background-color 0.3s ease,
+                        border 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+        .custom-cursor-dot {
+            width: 4px;
+            height: 4px;
+            background-color: #8ff5ff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .mesh-pattern {
+            background-image: radial-gradient(#22262f 1px, transparent 1px);
+            background-size: 60px 60px;
+            perspective: 1000px;
+        }
+        /* Parallax Background Grid */
+        #parallax-grid {
+            position: absolute;
+            inset: -10%;
+            width: 120%;
+            height: 120%;
+            background-image: 
+                linear-gradient(to right, rgba(143, 245, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(143, 245, 255, 0.05) 1px, transparent 1px);
+            background-size: 80px 80px;
+            transform: rotateX(20deg) rotateZ(-5deg);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .floating-shape {
+            position: absolute;
+            border: 1px solid rgba(143, 245, 255, 0.1);
+            background: linear-gradient(135deg, rgba(143, 245, 255, 0.05), transparent);
+            backdrop-filter: blur(2px);
+            animation: float 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -50px) rotate(10deg); }
+            66% { transform: translate(-20px, 40px) rotate(-10deg); }
+        }
+        /* Custom Scrollbar Hiding for Modal */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+<!-- Custom Cursor -->
+<div class="custom-cursor hidden md:block" id="cursor-ring"></div>
+<div class="custom-cursor-dot hidden md:block" id="cursor-dot"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#22262f]/60 backdrop-blur-xl shadow-[0_20px_80px_rgba(236,237,246,0.04)]">
+    <div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-4">
+        <a href="/" class="text-xl font-black tracking-tighter text-[#ecedf6] font-headline">SANCHAY JAIN</a>
+        <div class="hidden md:flex gap-10 items-center">
+            <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#8ff5ff] border-b-2 border-[#8ff5ff] pb-1 mix-blend-difference cursor-none active:scale-95" href="/">Home</a>
+            <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95" href="/projects/">Projects</a>
+            <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95" href="/thoughts/">Thoughts</a>
+            <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95" href="/contact/">Contact</a>
+        </div>
+        <a href="/contact/" class="bg-primary text-on-primary px-6 py-2 rounded-md font-headline font-bold text-sm uppercase hover:scale-105 transition-all duration-300 active:scale-95 cursor-none inline-block">
+            Contact Me
+        </a>
+    </div>
+</nav>
+<!-- Hero Section -->
+<main class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0 mesh-pattern opacity-40">
+            <div id="parallax-grid"></div>
+            <div class="floating-shape w-64 h-64 top-20 left-[10%]" style="animation-delay: 0s;"></div>
+            <div class="floating-shape w-48 h-48 bottom-40 right-[15%] rounded-full" style="animation-delay: -5s;"></div>
+            <div class="floating-shape w-32 h-96 top-40 right-[5%] -rotate-45" style="animation-delay: -12s;"></div>
+        </div>
+        <!-- 3D Geometric Background Effect -->
+        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[150px]"></div>
+        <!-- Floating shapes -->
+        <div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
+            <div class="flex flex-col items-start gap-6">
+                <span class="font-label text-sm uppercase tracking-[0.2em] text-primary bg-surface-container-highest px-4 py-1 rounded-full inline-block">
+                    Cybersecurity & Infrastructure
+                </span>
+                <h1 class="font-headline text-6xl md:text-8xl font-extrabold tracking-tighter leading-none text-on-surface max-w-4xl">
+                    ARCHITECTING <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SECURE</span> DIGITAL ENVIRONMENTS.
+                </h1>
+                <p class="font-body text-xl md:text-2xl text-on-surface-variant max-w-2xl leading-relaxed mt-4">
+                    I am <span class="text-on-surface font-semibold">Sanchay Jain</span>, a cybersecurity specialist focused on implementing cybersecurity solutions and protecting digital environments while also expanding my knowledge base in other areas of computer science such as system administrator, network administration, cloud computing and full-stack development.<span class="text-on-surface font-semibold"> I use Arch btw.</span>
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mt-8">
+                    <a href="/projects/" class="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary text-on-primary font-headline font-bold uppercase tracking-wider rounded-md hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(143,245,255,0.3)] interactive-el">
+                        Explore Builds
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                    </a>
+                    <a href="/sanchay-jain.pdf" target="_blank" class="flex items-center gap-2 px-8 py-4 bg-surface-variant/40 backdrop-blur-md border border-outline-variant/30 text-on-surface font-headline font-bold uppercase tracking-wider rounded-md hover:bg-surface-variant/60 transition-all interactive-el">
+                        View Resume
+                        <span class="material-symbols-outlined" data-icon="open_in_new">open_in_new</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute right-10 top-1/2 -translate-y-1/2 hidden lg:block w-1/3 aspect-square">
+            <div class="relative w-full h-full">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-surface-container rounded-xl rotate-12 border border-outline-variant/10 shadow-2xl overflow-hidden group">
+                    <img class="w-full h-full object-cover opacity-60" data-alt="abstract 3d visualization of security protocols" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-surface-container-high rounded-xl -rotate-6 border border-outline-variant/10 shadow-2xl overflow-hidden group">
+                    <img class="w-full h-full object-cover opacity-60" data-alt="futuristic 3D user interface dashboard elements" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+            </div>
+        </div>
+    </main>
+<!-- Certifications Section -->
+<section class="py-32 bg-surface-container-low relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-8 relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+            <div>
+                <span class="font-label text-xs uppercase tracking-[0.3em] text-secondary-dim mb-4 block">Validation &amp; Trust</span>
+                <h2 class="font-headline text-4xl md:text-5xl font-bold tracking-tight text-on-surface">Technical <span class="text-primary italic">Certifications</span></h2>
+            </div>
+            <p class="font-body text-on-surface-variant max-w-md text-right hidden md:block">
+                Maintaining peak performance through continuous learning and industry-standard validations from global leaders.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="group bg-surface-container p-8 rounded-xl border border-outline-variant/5 hover:bg-surface-bright transition-all duration-500 hover:shadow-[0_0_40px_rgba(143,245,255,0.05)] interactive-el">
+                <div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <span class="font-headline font-black text-primary text-2xl">G</span>
+                </div>
+                <h3 class="font-headline text-xl font-bold mb-2">Google Cybersecurity</h3>
+                <p class="font-body text-sm text-on-surface-variant mb-6">Professional certification that encompasses 9 certification to provide a single specialization certificate with topics including Bash, Security Incident Management, Hardening, and Threat Hunting and more.</p>
+                <div class="flex items-center gap-2 text-primary font-label text-xs tracking-widest uppercase">
+                    <span>Verified</span>
+                    <div class="h-px flex-1 bg-outline-variant/20"></div>
+                    <span>2026</span>
+                </div>
+            </div>
+
+            <div class="group bg-surface-container p-8 rounded-xl border border-outline-variant/5 hover:bg-surface-bright transition-all duration-500 hover:shadow-[0_0_40px_rgba(172,138,255,0.05)] interactive-el">
+                <div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-secondary text-3xl">code</span>
+                </div>
+                <h3 class="font-headline text-xl font-bold mb-2">Python for Cybersecurity Specialization</h3>
+                <p class="font-body text-sm text-on-surface-variant mb-6">An Infosec certification on Coursera specialization focused on MITRE attack framework, privilege escalation, automating security tasks and developing custom scripts.</p>
+                <div class="flex items-center gap-2 text-primary font-label text-xs tracking-widest uppercase">
+                    <span>Verified</span>
+                    <div class="h-px flex-1 bg-outline-variant/20"></div>
+                    <span>2026</span>
+                </div>
+            </div>
+
+            <div class="group bg-surface-container p-8 rounded-xl border border-outline-variant/5 hover:bg-surface-bright transition-all duration-500 hover:shadow-[0_0_40px_rgba(143,245,255,0.05)] interactive-el">
+                <div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-primary text-3xl">network_check</span>
+                </div>
+                <h3 class="font-headline text-xl font-bold mb-2">Networking Basics and TCP/IP Fundamentals</h3>
+                <p class="font-body text-sm text-on-surface-variant mb-6">A comprehensive introduction to networking concepts and the TCP/IP protocol suite, essential for understanding modern network architectures by packt.</p>
+                <div class="flex items-center gap-2 text-primary font-label text-xs tracking-widest uppercase">
+                    <span>Verified</span>
+                    <div class="h-px flex-1 bg-outline-variant/20"></div>
+                    <span>2026</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW BUTTON HERE -->
+        <div class="mt-16 flex justify-center">
+            <button onclick="openCertsModal()" class="flex items-center gap-3 px-8 py-4 bg-surface-container border border-outline-variant/20 text-on-surface font-headline font-bold uppercase tracking-wider rounded-full hover:border-primary/50 hover:bg-surface-bright transition-all duration-300 shadow-lg interactive-el">
+                <span class="material-symbols-outlined text-primary" data-icon="workspace_premium">workspace_premium</span>
+                View All Certifications
+            </button>
+        </div>
+    </div>
+</section>
+<!-- Certifications Modal -->
+<div id="certsModal" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center px-4">
+    <!-- Blurred Background -->
+    <div class="absolute inset-0 bg-background/80 backdrop-blur-md interactive-el" onclick="closeCertsModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="relative w-full max-w-5xl max-h-[85vh] bg-surface-container border border-outline-variant/20 rounded-2xl shadow-[0_0_80px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="certsModalInner">
+        
+        <!-- Modal Header -->
+        <div class="p-6 md:p-8 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-highest/50 backdrop-blur-md relative z-20">
+            <h2 class="font-headline text-2xl md:text-3xl font-bold text-on-surface">Complete <span class="signature-gradient-text italic">Certification Ledger</span></h2>
+            <button onclick="closeCertsModal()" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary border border-outline-variant/20 transition-all interactive-el">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <!-- Scrollable Grid -->
+        <div class="p-6 md:p-8 overflow-y-auto hide-scrollbar flex-1 relative z-10 bg-surface-dim/30">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Cert 1 -->
+                <div class="group bg-surface-container p-8 rounded-xl border border-outline-variant/5 hover:bg-surface-bright transition-all duration-500 interactive-el">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="font-headline font-black text-primary text-xl">G</span>
+                        </div>
+                        <h3 class="font-headline text-lg font-bold">Google Cybersecurity</h3>
+                    </div>
+                    <p class="font-body text-sm text-on-surface-variant mb-6">Professional certification that encompasses 9 certification to provide a single specialization certificate with topics including Bash, Security Incident Management, Hardening, and Threat Hunting and more.</p>
+                    <div class="flex items-center gap-2 text-primary font-label text-[10px] tracking-widest uppercase">
+                        <span>Verified</span><div class="h-px flex-1 bg-outline-variant/20"></div><span>2026</span>
+                    </div>
+                </div>
+
+                <!-- Cert 2 -->
+                <div class="group bg-surface-container p-8 rounded-xl border border-outline-variant/5 hover:bg-surface-bright transition-all duration-500 interactive-el">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-secondary">code</span>
+                        </div>
+                        <h3 class="font-headline text-lg font-bold">Python for Cybersecurity</h3>
+                    </div>
+                    <p class="font-body text-sm text-on-surface-variant mb-6">An Infosec certification on Coursera specialization focused on MITRE attack framework, privilege escalation, automating security tasks and developing custom scripts.</p>
+                    <div class="flex items-center gap-2 text-primary font-label text-[10px] tracking-widest uppercase">
+                        <span>Verified</span><div class="h-px flex-1 bg-outline-variant/20"></div><span>2026</span>
+                    </div>
+                </div>
+
+                <!-- Cert 3 -->
+                <div class="group bg-surface-container p-8 rounded-xl border border-outline-variant/5 hover:bg-surface-bright transition-all duration-500 interactive-el">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-primary">network_check</span>
+                        </div>
+                        <h3 class="font-headline text-lg font-bold">Networking Basics</h3>
+                    </div>
+                    <p class="font-body text-sm text-on-surface-variant mb-6">A comprehensive introduction to networking concepts and the TCP/IP protocol suite, essential for understanding modern network architectures by packt.</p>
+                    <div class="flex items-center gap-2 text-primary font-label text-[10px] tracking-widest uppercase">
+                        <span>Verified</span><div class="h-px flex-1 bg-outline-variant/20"></div><span>2026</span>
+                    </div>
+                </div>
+
+                <!-- Cert 4 (Example Additional Cert) -->
+                <div class="group bg-surface-container p-8 rounded-xl border border-outline-variant/5 hover:bg-surface-bright transition-all duration-500 interactive-el">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-secondary">cloud</span>
+                        </div>
+                        <h3 class="font-headline text-lg font-bold">Oracle Cloud Infrastructure</h3>
+                    </div>
+                    <p class="font-body text-sm text-on-surface-variant mb-6">Focused on deploying, securing, and scaling resilient cloud architectures and networking.</p>
+                    <div class="flex items-center gap-2 text-primary font-label text-[10px] tracking-widest uppercase">
+                        <span class="text-on-surface-variant">In Progress</span><div class="h-px flex-1 bg-outline-variant/20"></div><span>2026</span>
+                    </div>
+                </div>
+
+                
+
+            </div>
+        </div>
+    </div>
+</div>
+<section class="py-32 bg-background">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="relative group interactive-el">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div class="order-2 lg:order-1">
+                        <h3 class="font-headline text-5xl font-extrabold mb-6">PROJECT<br/>SCRAM</h3>
+                        <p class="font-body text-lg text-on-surface-variant mb-8 leading-relaxed">
+                            A multi-mode defense system engineered for Linux environments. SCRAM provides dynamic threat response, system hardening, and automated perimeter defenses to secure mission-critical infrastructure.
+                        </p>
+                        <ul class="flex flex-wrap gap-3 mb-10">
+                            <li class="px-4 py-1 rounded-full bg-surface-container-highest font-label text-[10px] uppercase tracking-wider text-on-surface">Linux Security</li>
+                            <li class="px-4 py-1 rounded-full bg-surface-container-highest font-label text-[10px] uppercase tracking-wider text-on-surface">System Hardening</li>
+                            <li class="px-4 py-1 rounded-full bg-surface-container-highest font-label text-[10px] uppercase tracking-wider text-on-surface">C++ & Python</li>
+                        </ul>
+                        <a href="/projects/scram.html" class="font-headline font-bold text-sm uppercase tracking-widest flex items-center gap-2 group-hover:text-primary transition-colors interactive-el">
+                            View Case Study 
+                            <span class="material-symbols-outlined" data-icon="north_east">north_east</span>
+                        </a>
+                    </div>
+                    <div class="order-1 lg:order-2 rounded-xl overflow-hidden aspect-video relative shadow-2xl">
+                        <div class="absolute inset-0 bg-primary/20 mix-blend-overlay z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="High-tech terminal output with cybersecurity concepts" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+<!-- Footer -->
+<footer class="w-full border-t border-[#45484f]/15 bg-[#10131a]">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-20 gap-8 max-w-7xl mx-auto">
+<div class="flex flex-col gap-2">
+<div class="font-headline font-black tracking-tighter text-xl text-[#ecedf6]">Sanchay Jain</div>
+<p class="font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3]">© 2026 SANCHAY JAIN. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8">
+<a target="_blank" class="font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70 cursor-none" href="https://www.linkedin.com/in/sanchay-jain-5bb117318/">LinkedIn</a>
+<a target="_blank" class="font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70 cursor-none" href="https://github.com/Sanchay0123">GitHub</a>
+<a target="_blank" class="font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70 cursor-none" href="mailto:sanchayjain35@gmail.com">Email</a>
+</div>
+</div>
+</footer>
+<script>
+    // Custom Cursor Logic with Lag
+    const ring = document.getElementById('cursor-ring');
+    const dot = document.getElementById('cursor-dot');
+    const parallaxGrid = document.getElementById('parallax-grid');
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let ringX = 0;
+    let ringY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // Dot moves instantly
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+
+        // Parallax grid effect
+        if (parallaxGrid) {
+            const moveX = (mouseX - window.innerWidth / 2) / 50;
+            const moveY = (mouseY - window.innerHeight / 2) / 50;
+            parallaxGrid.style.transform = `rotateX(${20 + moveY}deg) rotateZ(${-5 + moveX}deg) translate(${moveX * 2}px, ${moveY * 2}px)`;
+        }
+    });
+
+    // Lag effect loop
+    function animate() {
+        // Linear interpolation for smoothing
+        ringX += (mouseX - ringX) * 0.15;
+        ringY += (mouseY - ringY) * 0.15;
+        
+        ring.style.left = ringX + 'px';
+        ring.style.top = ringY + 'px';
+        
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Hover interactions
+    const interactables = document.querySelectorAll('a, button, .group, .interactive-el');
+    interactables.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            // Expand the ring and apply the negative color effect
+            ring.style.width = '80px';
+            ring.style.height = '80px';
+            ring.style.backgroundColor = '#ffffff'; 
+            ring.style.mixBlendMode = 'difference'; 
+            ring.style.borderWidth = '0px'; 
+            
+            // Shrink the inner dot away so it doesn't interfere with the text inversion
+            dot.style.transform = 'translate(-50%, -50%) scale(0)';
+        });
+        el.addEventListener('mouseleave', () => {
+            // Return to the standard cyan outline state
+            ring.style.width = '40px';
+            ring.style.height = '40px';
+            ring.style.backgroundColor = 'transparent';
+            ring.style.mixBlendMode = 'normal';
+            ring.style.borderColor = 'rgba(143, 245, 255, 0.5)';
+            ring.style.borderWidth = '1.5px';
+            
+            // Bring the inner dot back
+            dot.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+    });
+
+    // Modal Open/Close Logic
+    function openCertsModal() {
+        const modal = document.getElementById('certsModal');
+        const modalInner = document.getElementById('certsModalInner');
+        
+        // Unhide the container first
+        modal.classList.remove('hidden');
+        
+        // Small delay to allow CSS transitions to trigger
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            modalInner.classList.remove('scale-95');
+            modalInner.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeCertsModal() {
+        const modal = document.getElementById('certsModal');
+        const modalInner = document.getElementById('certsModalInner');
+        
+        // Trigger fade out
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        modalInner.classList.remove('scale-100');
+        modalInner.classList.add('scale-95');
+        
+        // Hide container after transition finishes
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+</script>
+</body></html>

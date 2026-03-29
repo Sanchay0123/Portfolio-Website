@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sanchay Jain | Projects Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#8ff5ff",
+              "primary": "#8ff5ff",
+              "secondary": "#ac8aff",
+              "surface-container-low": "#10131a",
+              "surface-container": "#161a21",
+              "surface-container-high": "#1c2028",
+              "surface-container-highest": "#22262f",
+              "surface-bright": "#282c36",
+              "on-surface": "#ecedf6",
+              "surface-variant": "#22262f",
+              "background": "#0b0e14",
+              "on-surface-variant": "#a9abb3",
+              "outline-variant": "#45484f",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(34, 38, 47, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(69, 72, 79, 0.15);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #8ff5ff, #ac8aff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Interactive Cursor */
+        .custom-cursor {
+            width: 40px;
+            height: 40px;
+            border: 1.5px solid rgba(143, 245, 255, 0.5);
+            background: transparent;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        height 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        background 0.3s ease,
+                        border 0.3s ease,
+                        mix-blend-mode 0.3s ease;
+        }
+        .custom-cursor.active {
+            width: 80px;
+            height: 80px;
+            background: #ffffff;
+            border: 0px solid transparent;
+            mix-blend-mode: difference;
+        }
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background: #8ff5ff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-50%, -50%) scale(1);
+            transition: transform 0.3s ease;
+        }
+
+        /* 3D Grid Background */
+        .bg-grid-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            z-index: -1;
+            overflow: hidden;
+            background: #0b0e14;
+        }
+        .grid-plane {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                linear-gradient(rgba(143, 245, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(143, 245, 255, 0.05) 1px, transparent 1px);
+            background-size: 100px 100px;
+            transform: rotateX(60deg);
+            transform-origin: center center;
+            animation: grid-move 20s linear infinite;
+        }
+        @keyframes grid-move {
+            0% { transform: rotateX(60deg) translateY(0); }
+            100% { transform: rotateX(60deg) translateY(100px); }
+        }
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-background overflow-x-hidden cursor-none">
+
+    <div class="bg-grid-3d">
+        <div class="grid-plane" id="parallaxGrid"></div>
+        <div class="floating-orb w-[500px] h-[500px] bg-primary top-[-10%] left-[-10%]" id="orb1"></div>
+        <div class="floating-orb w-[400px] h-[400px] bg-secondary bottom-[10%] right-[-5%]" id="orb2"></div>
+    </div>
+
+    <div class="custom-cursor hidden md:block" id="cursor-ring"></div>
+    <div class="cursor-dot hidden md:block" id="cursor-dot"></div>
+
+    <nav class="fixed top-0 w-full z-50 bg-[#22262f]/60 backdrop-blur-xl shadow-[0_20px_80px_rgba(236,237,246,0.04)]">
+        <div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-4">
+            <a href="/" class="text-xl font-black tracking-tighter text-[#ecedf6] font-headline interactive-element">SANCHAY.JAIN</a>
+            <div class="hidden md:flex gap-10 items-center">
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-element" href="/">Home</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#8ff5ff] border-b-2 border-[#8ff5ff] pb-1 mix-blend-difference cursor-none active:scale-95 interactive-element" href="/projects/">Projects</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-element" href="/thoughts/">Thoughts</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-element" href="/contact/">Contact</a>
+            </div>
+            <a href="/contact/" class="bg-primary text-[#0b0e14] px-6 py-2 rounded-md font-headline font-bold text-sm uppercase hover:scale-105 transition-all duration-300 active:scale-95 cursor-none inline-block interactive-element">
+                Contact Me
+            </a>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto relative z-10">
+        <header class="mb-20 space-y-4">
+            <div class="flex items-center gap-4">
+                <span class="h-[1px] w-12 bg-primary"></span>
+                <span class="font-label text-primary uppercase tracking-[0.2em] text-xs font-bold">Portfolio Showcase</span>
+            </div>
+            <h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tighter leading-none max-w-3xl">
+                CRAFTING <span class="text-gradient">DIGITAL</span> EXPERIENCES.
+            </h1>
+            <p class="text-on-surface-variant text-lg max-w-xl font-light">
+                A curated selection of architectural engineering and immersive interface designs built with precision and intent.
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="group relative glass-card rounded-xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(143,245,255,0.15)] hover:-translate-y-2 interactive-element flex flex-col h-full">
+                <div class="aspect-[16/10] overflow-hidden relative">
+                    <img alt="SCRAM Terminal" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+                <div class="p-8 space-y-4 flex flex-col flex-grow">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-primary">Linux Security</span>
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-secondary">C++ / Python</span>
+                    </div>
+                    <h3 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">SCRAM</h3>
+                    <p class="text-on-surface-variant text-sm flex-grow">A multi-mode defense system engineered for Linux environments, providing dynamic threat response, automated hardening, and perimeter security.</p>
+                    <div class="pt-4 flex items-center justify-between border-t border-outline-variant/20 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="flex gap-2">
+                            <span class="material-symbols-outlined text-sm text-primary">terminal</span>
+                            <span class="material-symbols-outlined text-sm text-primary">shield</span>
+                        </div>
+                        <a href="/projects/scram.html" class="flex items-center gap-2 text-primary font-headline text-xs font-bold uppercase tracking-wider group/btn cursor-none">
+                            View Project
+                            <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative glass-card rounded-xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(172,138,255,0.15)] hover:-translate-y-2 interactive-element flex flex-col h-full lg:mt-12">
+                <div class="aspect-[16/10] overflow-hidden">
+                    <img alt="Veritas Stream Network" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+                <div class="p-8 space-y-4 flex flex-col flex-grow">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-secondary">Neural Networks</span>
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-primary">Computer Vision</span>
+                    </div>
+                    <h3 class="font-headline text-2xl font-bold group-hover:text-secondary transition-colors">Veritas Stream</h3>
+                    <p class="text-on-surface-variant text-sm flex-grow">A cloud-based detection tool utilizing deep learning to identify and flag deepfakes in static images and live video streams with high accuracy.</p>
+                    <div class="pt-4 flex items-center justify-between border-t border-outline-variant/20 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="flex gap-2">
+                            <span class="material-symbols-outlined text-sm text-secondary">psychology</span>
+                            <span class="material-symbols-outlined text-sm text-secondary">visibility</span>
+                        </div>
+                        <a href="/projects/veritas_stream.html" class="flex items-center gap-2 text-secondary font-headline text-xs font-bold uppercase tracking-wider group/btn cursor-none">
+                            View Project 
+                            <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative glass-card rounded-xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(143,245,255,0.15)] hover:-translate-y-2 interactive-element flex flex-col h-full">
+                <div class="aspect-[16/10] overflow-hidden">
+                    <img alt="Digital Forensics" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+                <div class="p-8 space-y-4 flex flex-col flex-grow">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-primary">Digital Forensics</span>
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-secondary">Steganography</span>
+                    </div>
+                    <h3 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">StegScan</h3>
+                    <p class="text-on-surface-variant text-sm flex-grow">An advanced digital forensics tool designed to detect, analyze, and extract malicious payloads hidden within benign-looking media files.</p>
+                    <div class="pt-4 flex items-center justify-between border-t border-outline-variant/20 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="flex gap-2">
+                            <span class="material-symbols-outlined text-sm text-primary">troubleshoot</span>
+                            <span class="material-symbols-outlined text-sm text-primary">image_search</span>
+                        </div>
+                        <a href="/projects/stegscan.html" class="flex items-center gap-2 text-primary font-headline text-xs font-bold uppercase tracking-wider group/btn cursor-none">
+                            View Project 
+                            <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group relative glass-card rounded-xl overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(172,138,255,0.15)] hover:-translate-y-2 interactive-element flex flex-col h-full lg:mt-12">
+                <div class="aspect-[16/10] overflow-hidden">
+                    <img alt="Blockchain Network" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" src="https://images.unsplash.com/photo-1516110833967-0b5716ca1387?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+                <div class="p-8 space-y-4 flex flex-col flex-grow">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-secondary">Web3 / Blockchain</span>
+                        <span class="font-label text-[10px] tracking-widest uppercase bg-surface-container-highest px-3 py-1 rounded-full text-primary">Healthcare</span>
+                    </div>
+                    <h3 class="font-headline text-2xl font-bold group-hover:text-secondary transition-colors">TrustChain</h3>
+                    <p class="text-on-surface-variant text-sm flex-grow">A decentralized, tamper-proof blockchain system tracking medicines across the entire supply chain to eliminate fraud and ensure authenticity.</p>
+                    <div class="pt-4 flex items-center justify-between border-t border-outline-variant/20 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="flex gap-2">
+                            <span class="material-symbols-outlined text-sm text-secondary">link</span>
+                            <span class="material-symbols-outlined text-sm text-secondary">medication</span>
+                        </div>
+                        <a href="/projects/trustchain.html" class="flex items-center gap-2 text-secondary font-headline text-xs font-bold uppercase tracking-wider group/btn cursor-none">
+                            View Project 
+                            <span class="material-symbols-outlined text-sm group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="w-full border-t border-[#45484f]/15 bg-[#10131a] relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center px-12 py-20 gap-8 max-w-7xl mx-auto">
+            <div class="font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3]">
+                © 2026 SANCHAY JAIN. ALL RIGHTS RESERVED.
+            </div>
+            <div class="flex gap-12">
+                <a target="_blank" class="font-headline text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 interactive-element cursor-none" href="https://www.linkedin.com/in/sanchay-jain-5bb117318/">LinkedIn</a>
+                <a target="_blank" class="font-headline text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 interactive-element cursor-none" href="https://github.com/Sanchay0123">GitHub</a>
+                <a target="_blank" class="font-headline text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 interactive-element cursor-none" href="mailto:sanchayjain35@gmail.com">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Negative Inversion Cursor Logic
+        const ring = document.getElementById('cursor-ring');
+        const dot = document.getElementById('cursor-dot');
+        const interactives = document.querySelectorAll('.interactive-element, a, button');
+
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+        let dotX = 0, dotY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            const ringLag = 0.15;
+            const dotLag = 0.8; 
+
+            ringX += (mouseX - ringX) * ringLag;
+            ringY += (mouseY - ringY) * ringLag;
+            
+            dotX += (mouseX - dotX) * dotLag;
+            dotY += (mouseY - dotY) * dotLag;
+
+            ring.style.left = `${ringX}px`;
+            ring.style.top = `${ringY}px`;
+            
+            dot.style.left = `${dotX}px`;
+            dot.style.top = `${dotY}px`;
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Invert Color on Hover
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                ring.classList.add('active');
+                dot.style.transform = 'translate(-50%, -50%) scale(0)';
+            });
+            el.addEventListener('mouseleave', () => {
+                ring.classList.remove('active');
+                dot.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+        });
+
+        // Parallax Logic
+        const grid = document.getElementById('parallaxGrid');
+        const orb1 = document.getElementById('orb1');
+        const orb2 = document.getElementById('orb2');
+
+        window.addEventListener('mousemove', (e) => {
+            const xPercent = (e.clientX / window.innerWidth - 0.5) * 2;
+            const yPercent = (e.clientY / window.innerHeight - 0.5) * 2;
+
+            grid.style.transform = `rotateX(60deg) translateX(${xPercent * 20}px) translateY(${yPercent * 20}px)`;
+            orb1.style.transform = `translate(${xPercent * 50}px, ${yPercent * 50}px)`;
+            orb2.style.transform = `translate(${xPercent * -80}px, ${yPercent * -80}px)`;
+        });
+    </script>
+</body>
+</html>

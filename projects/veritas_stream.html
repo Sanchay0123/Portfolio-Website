@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Veritas Stream | Sanchay Jain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#8ff5ff",
+              "on-tertiary-container": "#53575c",
+              "primary-fixed-dim": "#00deec",
+              "secondary": "#ac8aff",
+              "on-secondary": "#280067",
+              "surface-container-low": "#10131a",
+              "tertiary-fixed": "#f3f7fd",
+              "on-secondary-container": "#d9c8ff",
+              "primary": "#8ff5ff",
+              "tertiary": "#f6f9ff",
+              "primary-fixed": "#00eefc",
+              "on-tertiary": "#5b5f65",
+              "primary-container": "#00eefc",
+              "tertiary-fixed-dim": "#e5e8ee",
+              "secondary-fixed-dim": "#ceb9ff",
+              "surface-container-high": "#1c2028",
+              "surface-dim": "#0b0e14",
+              "secondary-container": "#5516be",
+              "error-container": "#9f0519",
+              "inverse-primary": "#006a71",
+              "on-primary-fixed": "#003f43",
+              "primary-dim": "#00deec",
+              "on-secondary-fixed-variant": "#5f28c8",
+              "on-primary-fixed-variant": "#005e64",
+              "inverse-on-surface": "#52555c",
+              "on-surface": "#ecedf6",
+              "surface-variant": "#22262f",
+              "background": "#0b0e14",
+              "on-surface-variant": "#a9abb3",
+              "on-tertiary-fixed": "#474c51",
+              "outline": "#73757d",
+              "on-error-container": "#ffa8a3",
+              "surface-container-highest": "#22262f",
+              "surface-container": "#161a21",
+              "secondary-fixed": "#dac9ff",
+              "inverse-surface": "#f9f9ff",
+              "on-background": "#ecedf6",
+              "on-primary-container": "#005359",
+              "tertiary-container": "#e7ebf1",
+              "surface-bright": "#282c36",
+              "on-primary": "#005d63",
+              "surface": "#0b0e14",
+              "on-secondary-fixed": "#40009b",
+              "secondary-dim": "#8455ef",
+              "tertiary-dim": "#e5e8ee",
+              "surface-container-lowest": "#000000",
+              "on-tertiary-fixed-variant": "#64686e",
+              "on-error": "#490006",
+              "error": "#ff716c",
+              "outline-variant": "#45484f",
+              "error-dim": "#d7383b"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+        .glass-nav {
+            background: rgba(34, 38, 47, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .signature-gradient {
+            background: linear-gradient(45deg, #8ff5ff, #ac8aff);
+        }
+        
+        /* Interactive Cursor */
+        .custom-cursor {
+            width: 40px;
+            height: 40px;
+            border: 1.5px solid rgba(143, 245, 255, 0.5);
+            background: transparent;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        height 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        background 0.3s ease,
+                        border 0.3s ease,
+                        mix-blend-mode 0.3s ease;
+        }
+        .custom-cursor.active {
+            width: 80px;
+            height: 80px;
+            background: #ffffff;
+            border: 0px solid transparent;
+            mix-blend-mode: difference;
+        }
+        .custom-cursor-dot {
+            width: 4px;
+            height: 4px;
+            background: #8ff5ff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%) scale(1);
+            transition: transform 0.3s ease;
+        }
+        body {
+            cursor: none;
+            overflow-x: hidden;
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary overflow-x-hidden">
+    
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="custom-cursor hidden md:block" id="cursor-ring"></div>
+    <div class="custom-cursor-dot hidden md:block" id="cursor-dot"></div>
+
+    <nav class="fixed top-0 w-full z-50 bg-[#22262f]/60 backdrop-blur-xl shadow-[0_20px_80px_rgba(236,237,246,0.04)]">
+        <div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-4">
+            <a href="/" class="text-xl font-black tracking-tighter text-[#ecedf6] font-headline interactive-el">SANCHAY.JAIN</a>
+            <div class="hidden md:flex gap-10 items-center">
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/">Home</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#8ff5ff] border-b-2 border-[#8ff5ff] pb-1 mix-blend-difference cursor-none active:scale-95 interactive-el" href="/projects/">Projects</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/thoughts/">Thoughts</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/contact/">Contact</a>
+            </div>
+            <a href="/contact/" class="bg-primary text-[#0b0e14] px-6 py-2 rounded-md font-headline font-bold text-sm uppercase hover:scale-105 transition-all duration-300 active:scale-95 cursor-none inline-block interactive-el">
+                Contact Me
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative w-full h-[870px] flex items-end overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0">
+            <img alt="Neural network grid abstract" class="w-full h-full object-cover grayscale opacity-60 mix-blend-luminosity" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2000&auto=format&fit=crop"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-8 pb-16 w-full">
+            <div class="flex flex-col gap-4">
+                <span class="font-label text-secondary tracking-[0.2em] uppercase text-xs">Case Study — AI Identity Verification</span>
+                <h1 class="font-headline text-5xl md:text-8xl font-black tracking-tighter leading-none max-w-4xl text-on-surface">
+                    VERITAS<br/>STREAM
+                </h1>
+                <p class="max-w-xl text-on-surface-variant text-lg font-light leading-relaxed mt-4 mb-6">
+                    A multi-layered deep learning tool designed to identify and flag deepfakes in static images and live video streams with high accuracy. *Ongoing Project*
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://github.com/Sanchay0123/Veritas-Stream" target="_blank" class="flex items-center gap-2 px-8 py-4 bg-secondary text-[#0b0e14] font-headline font-bold uppercase tracking-wider rounded-md hover:scale-105 transition-transform interactive-el">
+                        View Source Code
+                        <span class="material-symbols-outlined" data-icon="open_in_new">open_in_new</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-8 py-24 space-y-32">
+        
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-12">
+            <div class="md:col-span-7 flex flex-col justify-center">
+                <label class="font-label text-primary tracking-[0.2em] uppercase text-[10px] mb-4">01 // The Vulnerability</label>
+                <h2 class="font-headline text-4xl font-bold tracking-tight mb-8">The Erosion of Digital Truth.</h2>
+                <p class="text-on-surface-variant text-lg leading-relaxed mb-6">
+                    As generative AI rapidly advances, hyper-realistic deepfakes are becoming a severe threat to authentication systems, media integrity, and personal security. The challenge was building an application-level tool capable of scrutinizing media beyond the visual spectrum, catching pixel-level anomalies and metadata manipulation that the human eye misses.
+                </p>
+                <div class="grid grid-cols-2 gap-8 mt-8">
+                    <div class="p-6 bg-surface-container-low/50 backdrop-blur-md rounded-xl border-l-4 border-secondary">
+                        <span class="block font-headline text-2xl font-bold text-on-surface">Live-Stream</span>
+                        <span class="text-xs font-label uppercase text-on-surface-variant tracking-wider">Frame Analysis</span>
+                    </div>
+                    <div class="p-6 bg-surface-container-low/50 backdrop-blur-md rounded-xl border-l-4 border-primary">
+                        <span class="block font-headline text-2xl font-bold text-on-surface">Micro-Artifact</span>
+                        <span class="text-xs font-label uppercase text-on-surface-variant tracking-wider">Detection Layer</span>
+                    </div>
+                </div>
+            </div>
+            <div class="md:col-span-5 relative group">
+                <div class="absolute -inset-4 signature-gradient opacity-20 blur-3xl rounded-full"></div>
+                <div class="relative bg-surface-container/50 backdrop-blur-md p-4 rounded-xl overflow-hidden aspect-square flex items-center justify-center cursor-none">
+                    <img alt="Abstract AI and face scanning" class="w-full h-full object-cover rounded-lg group-hover:scale-110 transition-transform duration-700 opacity-80" src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-12">
+            <div class="text-center max-w-2xl mx-auto">
+                <label class="font-label text-secondary tracking-[0.2em] uppercase text-[10px] mb-4">02 // The Architecture</label>
+                <h2 class="font-headline text-4xl font-bold tracking-tight">Multi-Vector Analysis.</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-surface-container/50 backdrop-blur-md p-10 rounded-xl relative overflow-hidden hover:bg-surface-bright/80 transition-colors duration-500 interactive-el">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                        <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4">CNN Artifact Detection</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Deployed Convolutional Neural Networks (CNNs) trained specifically to identify the minute blending boundaries, edge mismatches, and temporal flickering common in AI-generated media.</p>
+                </div>
+                <div class="bg-surface-container/50 backdrop-blur-md p-10 rounded-xl relative overflow-hidden hover:bg-surface-bright/80 transition-colors duration-500 interactive-el">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                        <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">data_check</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4">Steganography Checks</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Integrated deep-scan algorithms to detect hidden data payloads, structural anomalies, and steganographic manipulation within the media file headers.</p>
+                </div>
+                <div class="bg-surface-container/50 backdrop-blur-md p-10 rounded-xl relative overflow-hidden hover:bg-surface-bright/80 transition-colors duration-500 interactive-el">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
+                        <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">manage_search</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4">EXIF Metadata Audits</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Automated parsing and validation of EXIF data, searching for compression footprints, software tags, or missing camera profiles indicative of synthetic generation.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-16">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-8">
+                <div class="max-w-xl">
+                    <label class="font-label text-primary tracking-[0.2em] uppercase text-[10px] mb-4">03 // The Outcome</label>
+                    <h2 class="font-headline text-4xl font-bold tracking-tight">Real-Time Verification.</h2>
+                </div>
+                <div class="flex gap-4">
+                    <span class="bg-surface-container-highest/50 backdrop-blur-md px-4 py-2 rounded-full font-label text-[10px] uppercase text-on-surface-variant tracking-widest flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span> Cloud Integrated
+                    </span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-8 h-[600px] rounded-xl overflow-hidden bg-surface-container/50 backdrop-blur-md group interactive-el">
+                    <img alt="Data analytics UI dashboard" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] opacity-80" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000&auto=format&fit=crop"/>
+                </div>
+                <div class="md:col-span-4 grid grid-rows-2 gap-8">
+                    <div class="rounded-xl overflow-hidden bg-surface-container/50 backdrop-blur-md group interactive-el">
+                        <img alt="Camera lenses and optics" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-70" src="https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?q=80&w=1000&auto=format&fit=crop"/>
+                    </div>
+                    <div class="rounded-xl overflow-hidden bg-surface-container/50 backdrop-blur-md group interactive-el">
+                        <img alt="React code block on dark theme" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-80" src="https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=1000&auto=format&fit=crop"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low/30 backdrop-blur-sm p-16 rounded-3xl border border-outline-variant/10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="md:col-span-1">
+                    <h3 class="font-headline text-2xl font-black tracking-tighter uppercase mb-4">The Stack.</h3>
+                    <p class="text-on-surface-variant text-sm">A full-stack implementation connecting high-performance AI modeling with a responsive frontend.</p>
+                </div>
+                <div class="md:col-span-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="font-headline text-2xl font-bold text-secondary">TF</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">TensorFlow</span>
+                        </div>
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="font-headline text-2xl font-bold text-primary">Py</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">Computer Vision</span>
+                        </div>
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="font-headline text-2xl font-bold text-secondary">React</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">Frontend UI</span>
+                        </div>
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="material-symbols-outlined text-primary">cloud</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">Cloud Backend</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pt-24 flex flex-col md:flex-row justify-between items-center gap-12 border-t border-outline-variant/10">
+            <a class="group flex items-center gap-6 interactive-el" href="/projects/">
+                <div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                </div>
+                <div>
+                    <span class="block font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Back to Gallery</span>
+                    <span class="block font-headline font-bold text-lg group-hover:text-primary transition-colors">All Projects</span>
+                </div>
+            </a>
+            
+            <a class="group flex items-center text-right gap-6 interactive-el" href="/projects/stegscan.html">
+                <div>
+                    <span class="block font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Next Project</span>
+                    <span class="block font-headline font-bold text-lg group-hover:text-secondary transition-colors">Stegscan</span>
+                </div>
+                <div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-secondary transition-colors">
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+            </a>
+        </section>
+    </main>
+
+    <footer class="w-full border-t border-[#45484f]/15 bg-[#10131a] relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center px-12 py-20 gap-8 max-w-7xl mx-auto">
+            <div class="font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3]">
+                © 2026 SANCHAY JAIN. ALL RIGHTS RESERVED.
+            </div>
+            <div class="flex gap-12">
+                <a class="font-headline text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 interactive-el" href="https://www.linkedin.com/in/sanchay-jain-5bb117318/">LinkedIn</a>
+                <a class="font-headline text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 interactive-el" href="https://github.com/Sanchay0123">GitHub</a>
+                <a class="font-headline text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 interactive-el" href="mailto:sanchayjain35@gmail.com">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // --- 3D Background Effect ---
+        const canvas = document.getElementById('bg-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        const particlesCount = 100;
+        const positions = new Float32Array(particlesCount * 3);
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0xac8aff, // Switched to secondary purple color for this project
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+
+        const meshes = [];
+        for(let i = 0; i < 15; i++) {
+            const size = Math.random() * 0.5 + 0.1;
+            const geo = Math.random() > 0.5 ? new THREE.IcosahedronGeometry(size, 0) : new THREE.BoxGeometry(size, size, size);
+            const mesh = new THREE.Mesh(geo, material);
+            mesh.position.set(
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10
+            );
+            mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+            scene.add(mesh);
+            meshes.push({
+                mesh,
+                speed: Math.random() * 0.01 + 0.002,
+                rotSpeed: Math.random() * 0.01
+            });
+        }
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xac8aff, 1);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        const starsGeo = new THREE.BufferGeometry();
+        const starsPos = new Float32Array(500 * 3);
+        for(let i=0; i<500*3; i++) starsPos[i] = (Math.random() - 0.5) * 20;
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0x8ff5ff, size: 0.02 });
+        const starField = new THREE.Points(starsGeo, starsMat);
+        scene.add(starField);
+
+        let mouseX = 0;
+        let mouseY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) - 0.5;
+            mouseY = (e.clientY / window.innerHeight) - 0.5;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            meshes.forEach(m => {
+                m.mesh.rotation.x += m.rotSpeed;
+                m.mesh.rotation.y += m.rotSpeed;
+                m.mesh.position.y += Math.sin(Date.now() * 0.001 * m.speed) * 0.002;
+            });
+
+            camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+
+        // --- Negative Inversion Cursor Logic ---
+        const ring = document.getElementById('cursor-ring');
+        const dot = document.getElementById('cursor-dot');
+        const interactives = document.querySelectorAll('.interactive-el, a, button');
+        
+        let ringX = 0, ringY = 0;
+        let targetX = 0, targetY = 0;
+
+        document.addEventListener('mousemove', e => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+            
+            dot.style.left = targetX + 'px';
+            dot.style.top = targetY + 'px';
+        });
+
+        function updateRing() {
+            ringX += (targetX - ringX) * 0.15;
+            ringY += (targetY - ringY) * 0.15;
+            
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
+            
+            requestAnimationFrame(updateRing);
+        }
+        updateRing();
+
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                ring.classList.add('active');
+                dot.style.transform = 'translate(-50%, -50%) scale(0)';
+            });
+            el.addEventListener('mouseleave', () => {
+                ring.classList.remove('active');
+                dot.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
