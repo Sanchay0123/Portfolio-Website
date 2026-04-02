@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Arch Linux: The Art of the Minimalist Daemon | Sanchay Jain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#8ff5ff",
+              "secondary": "#ac8aff",
+              "surface-container-low": "#10131a",
+              "surface-container": "#161a21",
+              "surface-container-highest": "#22262f",
+              "surface-bright": "#282c36",
+              "on-surface": "#ecedf6",
+              "surface-variant": "#22262f",
+              "background": "#0b0e14",
+              "on-surface-variant": "#a9abb3",
+              "outline-variant": "#45484f",
+              "on-primary": "#005d63",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+      body { cursor: none; overflow-x: hidden; background-color: #0b0e14; color: #ecedf6; font-family: 'Manrope', sans-serif;}
+      
+      /* Synced Custom Cursor */
+      .custom-cursor {
+          width: 40px; height: 40px;
+          border: 1.5px solid rgba(143, 245, 255, 0.5);
+          background-color: transparent; border-radius: 50%;
+          position: fixed; pointer-events: none; z-index: 9999;
+          transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1), height 0.3s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.3s ease, border 0.3s ease;
+          transform: translate(-50%, -50%);
+      }
+      .custom-cursor-dot {
+          width: 4px; height: 4px; background-color: #8ff5ff; border-radius: 50%;
+          position: fixed; pointer-events: none; z-index: 10000;
+          transform: translate(-50%, -50%); transition: transform 0.3s ease;
+      }
+
+      /* 3D Backgrounds */
+      #bg-canvas {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: -1; pointer-events: none;
+        background: radial-gradient(circle at 50% 50%, #161a21 0%, #0b0e14 100%);
+      }
+      .grid-parallax {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-image: linear-gradient(rgba(143, 245, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(143, 245, 255, 0.03) 1px, transparent 1px);
+        background-size: 80px 80px; background-position: center center;
+        z-index: -1; transform: perspective(1000px) rotateX(20deg) scale(1.5); opacity: 0.5;
+      }
+      
+      /* Article Specific Styling */
+      .article-content p { margin-bottom: 1.5rem; line-height: 1.8; color: #a9abb3; font-size: 1.125rem; }
+      .article-content h2 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; color: #ecedf6; margin-top: 3rem; margin-bottom: 1rem; letter-spacing: -0.025em; }
+      .article-content h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 600; color: #ecedf6; margin-top: 2rem; margin-bottom: 1rem; }
+      .article-content strong { color: #8ff5ff; font-weight: 600; }
+      .article-content blockquote { border-left: 4px solid #8ff5ff; padding-left: 1.5rem; font-style: italic; margin: 2rem 0; color: #ecedf6; background: rgba(143, 245, 255, 0.05); padding: 1.5rem; border-radius: 0 8px 8px 0;}
+      .article-content code { background-color: #161a21; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; color: #ac8aff; font-size: 0.9em; border: 1px solid rgba(69, 72, 79, 0.3);}
+      .article-content pre { background-color: #10131a; padding: 1.5rem; border-radius: 8px; overflow-x: auto; border: 1px solid #22262f; margin: 2rem 0; }
+      .article-content pre code { background-color: transparent; padding: 0; border: none; color: #ecedf6; }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+
+    <div class="custom-cursor hidden md:block" id="cursor-ring"></div>
+    <div class="custom-cursor-dot hidden md:block" id="cursor-dot"></div>
+    <canvas id="bg-canvas"></canvas>
+    <div class="grid-parallax" id="grid-parallax"></div>
+
+    <nav class="fixed top-0 w-full z-50 bg-[#22262f]/60 backdrop-blur-xl shadow-[0_20px_80px_rgba(236,237,246,0.04)]">
+        <div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-4">
+            <a href="/" class="text-xl font-black tracking-tighter text-[#ecedf6] font-headline interactive-el">SANCHAY JAIN</a>
+            <div class="hidden md:flex gap-10 items-center">
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/">Home</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/projects/">Projects</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#8ff5ff] border-b-2 border-[#8ff5ff] pb-1 mix-blend-difference cursor-none active:scale-95 interactive-el" href="/thoughts/">Thoughts</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/contact/">Contact</a>
+            </div>
+            <a href="/contact/" class="bg-primary text-on-primary px-6 py-2 rounded-md font-headline font-bold text-sm uppercase hover:scale-105 transition-all duration-300 active:scale-95 cursor-none inline-block interactive-el">
+                Contact Me
+            </a>
+        </div>
+    </nav>
+
+    <main class="relative pt-40 pb-32 px-6 max-w-4xl mx-auto z-10">
+        
+        <header class="mb-16">
+            <a href="/thoughts/" class="inline-flex items-center gap-2 text-outline hover:text-primary transition-colors font-label text-xs uppercase tracking-widest mb-12 interactive-el">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Back to Feed
+            </a>
+
+            <div class="flex items-center gap-4 mb-6">
+                <span class="px-3 py-1 bg-surface-container-highest text-secondary font-label text-[10px] font-bold uppercase tracking-widest rounded-full">Linux</span>
+                <time class="font-label text-xs font-bold text-on-surface-variant tracking-widest uppercase">August 12, 2024</time>
+                <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                <span class="font-label text-xs font-bold text-primary tracking-widest uppercase">06 MIN READ</span>
+            </div>
+
+            <h1 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter mb-8 text-on-surface leading-tight">
+                Arch Linux: <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">The Art of the Minimalist Daemon</span>
+            </h1>
+
+            <div class="w-full aspect-[21/9] rounded-2xl overflow-hidden bg-surface-container shadow-2xl border border-outline-variant/20 relative group">
+            <img class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80" alt="Abstract visualization of network data flows">            </div>
+        </header>
+
+        <article class="article-content font-body">
+            <p>If you provision a standard Ubuntu server image on AWS today, you are booting up an operating system bundled with snap daemons, telemetry reporters, pre-configured firewall wrappers, and Bluetooth drivers. In a production environment hosting a secure backend API, over 80% of the active processes running in your kernel space are completely unnecessary.</p>
+
+            <p>From a cybersecurity perspective, every single running process is a potential attack vector. Every open port is a doorway, and every background daemon parsing input is a potential buffer overflow waiting to be exploited. This is why the "I use Arch, btw" meme fundamentally misses the point. Arch isn't a badge of elitism; it is a methodology for reducing attack surfaces.</p>
+
+            <h2>Zero-Trust at the OS Level</h2>
+            <p>The philosophy of a minimalist distribution like Arch Linux (or Alpine for containers) is entirely opt-in. When you finish the base installation, you do not have a graphical interface, you do not have an SSH server, and you don't even have a network manager. The machine is practically inert.</p>
+
+            <blockquote>
+                "Stripping an OS down to its bare metal components forces you to justify the existence of every single binary you execute. If you don't know exactly what a daemon is doing, it shouldn't be running."
+            </blockquote>
+
+            <p>This "opt-in" architecture is the ultimate precursor to engineering secure applications. If you build a C++ network packet analyzer (like SCRAM or NetSpecter), you shouldn't rely on bloated, overarching OS rules to keep it safe. You write a highly specific, restricted daemon to run it.</p>
+
+            <h3>Constructing the Perfect systemd Service</h3>
+            <p>Writing the C++ code is only half the battle. Deploying that binary securely is what separates a script from a service. Using `systemd`, we can wrap our bare-metal applications in aggressive security sandboxes before they even execute.</p>
+
+            <p>Look at this configuration for a custom daemon. Notice that we aren't just telling Linux to run the file—we are dynamically stripping away its privileges at the kernel level:</p>
+
+<pre><code>[Unit]
+Description=SCRAM Network Defense Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/scram_daemon
+Restart=always
+User=scram_user
+
+# Hardening Options
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictNamespaces=yes
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+
+            <h2>The Elegance of `CAP_NET_RAW`</h2>
+            <p>In the config above, we do not run the daemon as `root`. Running network-facing applications as root is a catastrophic security failure. Instead, we run it as an unprivileged user, and use Linux Capabilities (`CapabilityBoundingSet`) to grant the binary <em>only</em> the permission to open raw network sockets (`CAP_NET_RAW`) and nothing else.</p>
+
+            <p>If an attacker manages to exploit a vulnerability in the C++ binary and achieve Remote Code Execution (RCE), they won't find themselves inside a cozy Ubuntu environment with `sudo` access and Python installed. They will find themselves trapped in a locked-down `systemd` sandbox with no privileges, no writable directories, and an operating system that doesn't even have `curl` installed to download a secondary payload.</p>
+
+            <p>True security isn't about building higher walls around your server. It's about ensuring that if the walls are breached, there is absolutely nothing inside the castle worth stealing.</p>
+        </article>
+
+        <div class="mt-20 pt-10 border-t border-outline-variant/20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-[#0b0e14] font-headline font-black text-xl">
+                    SJ
+                </div>
+                <div>
+                    <h4 class="font-headline font-bold text-on-surface">Sanchay Jain</h4>
+                    <p class="font-label text-[10px] uppercase tracking-widest text-secondary">Linux & Infrastructure</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button id="share-btn" class="interactive-el w-10 h-10 rounded-full border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[20px]">share</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="relative w-full border-t border-[#45484f]/15 bg-[#10131a] z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center px-12 py-20 gap-8 max-w-7xl mx-auto">
+            <div class="flex flex-col gap-2">
+                <div class="font-headline font-black tracking-tighter text-xl text-[#ecedf6]">Sanchay Jain</div>
+                <p class="font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3]">© 2026 SANCHAY JAIN. ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="flex gap-8">
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70" href="https://www.linkedin.com/in/sanchay-jain-5bb117318/">LinkedIn</a>
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70" href="https://github.com/Sanchay0123">GitHub</a>
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70 text-[#8ff5ff]" href="mailto:sanchayjain35@gmail.com">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const ring = document.getElementById('cursor-ring');
+        const dot = document.getElementById('cursor-dot');
+        const interactives = document.querySelectorAll('.interactive-el, a, button');
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const parallaxGrid = document.getElementById('grid-parallax');
+
+        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        let width, height, kernels = [];
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+        });
+
+        // Initialize KERNEL & DAEMONS ORBIT 3D background elements
+        function init3D() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            kernels = [];
+            
+            // Spawn large central "Kernels"
+            for(let i = 0; i < 8; i++) { 
+                let daemons = [];
+                let daemonCount = Math.floor(Math.random() * 4) + 2; // 2 to 5 daemons per kernel
+                
+                // Spawn orbiting "Daemons" for each kernel
+                for(let j = 0; j < daemonCount; j++) {
+                    daemons.push({
+                        angle: Math.random() * Math.PI * 2,
+                        distance: Math.random() * 40 + 30, // Orbit radius
+                        speed: (Math.random() - 0.5) * 0.03,
+                        size: Math.random() * 3 + 2,
+                        color: Math.random() > 0.5 ? '#8ff5ff' : '#ac8aff'
+                    });
+                }
+
+                kernels.push({
+                    x: Math.random() * width, y: Math.random() * height,
+                    size: Math.random() * 15 + 10, 
+                    color: '#45484f', // Dark, bare-metal core
+                    speedX: (Math.random() - 0.5) * 0.2, speedY: (Math.random() - 0.5) * 0.2,
+                    daemons: daemons
+                });
+            }
+        }
+        window.addEventListener('resize', init3D);
+        init3D();
+
+        // Main Animation Loop
+        function animateEngines() {
+            ringX += (mouseX - ringX) * 0.15; ringY += (mouseY - ringY) * 0.15;
+            ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+
+            if (parallaxGrid) {
+                const moveX = (mouseX - window.innerWidth / 2) / 50;
+                const moveY = (mouseY - window.innerHeight / 2) / 50;
+                parallaxGrid.style.transform = `rotateX(${20 + moveY}deg) rotateZ(${-5 + moveX}deg) translate(${moveX * 2}px, ${moveY * 2}px)`;
+            }
+
+            ctx.clearRect(0, 0, width, height);
+            
+            const pX = (mouseX - width/2) * 0.005;
+            const pY = (mouseY - height/2) * 0.005;
+
+            // Render Kernels and Daemons
+            kernels.forEach(kernel => {
+                ctx.save();
+                ctx.translate(kernel.x + pX, kernel.y + pY);
+                
+                // Draw Kernel Core
+                ctx.fillStyle = kernel.color;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#000000';
+                ctx.beginPath();
+                ctx.arc(0, 0, kernel.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw Core Outline
+                ctx.strokeStyle = '#5b5f65';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Process Orbiting Daemons
+                kernel.daemons.forEach(daemon => {
+                    // Draw orbit ring
+                    ctx.beginPath();
+                    ctx.arc(0, 0, daemon.distance, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(69, 72, 79, 0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Calculate daemon position
+                    let dX = Math.cos(daemon.angle) * daemon.distance;
+                    let dY = Math.sin(daemon.angle) * daemon.distance;
+
+                    // Draw Daemon
+                    ctx.fillStyle = daemon.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = daemon.color;
+                    ctx.beginPath();
+                    ctx.arc(dX, dY, daemon.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Update angle
+                    daemon.angle += daemon.speed;
+                });
+
+                ctx.restore();
+
+                // Move Kernel System
+                kernel.x += kernel.speedX; kernel.y += kernel.speedY;
+                if(kernel.x < -150) kernel.x = width + 150;
+                if(kernel.x > width + 150) kernel.x = -150;
+                if(kernel.y < -150) kernel.y = height + 150;
+                if(kernel.y > height + 150) kernel.y = -150;
+            });
+
+            requestAnimationFrame(animateEngines);
+        }
+        animateEngines();
+
+        // Synced Hover Inversion
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                ring.style.width = '80px'; ring.style.height = '80px';
+                ring.style.backgroundColor = '#ffffff'; ring.style.mixBlendMode = 'difference'; 
+                ring.style.borderWidth = '0px'; dot.style.transform = 'translate(-50%, -50%) scale(0)';
+            });
+            el.addEventListener('mouseleave', () => {
+                ring.style.width = '40px'; ring.style.height = '40px';
+                ring.style.backgroundColor = 'transparent'; ring.style.mixBlendMode = 'normal';
+                ring.style.borderColor = 'rgba(143, 245, 255, 0.5)'; ring.style.borderWidth = '1.5px';
+                dot.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+        });
+
+        document.addEventListener('mouseleave', () => { ring.style.opacity = '0'; dot.style.opacity = '0'; });
+        document.addEventListener('mouseenter', () => { ring.style.opacity = '1'; dot.style.opacity = '1'; });
+
+        // Share Button Logic
+        const shareBtn = document.getElementById('share-btn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', async () => {
+                const shareData = {
+                    title: document.title,
+                    text: 'Check out this architectural breakdown by Sanchay Jain:',
+                    url: window.location.href
+                };
+                const icon = shareBtn.querySelector('span');
+
+                try {
+                    if (navigator.share) {
+                        await navigator.share(shareData);
+                    } else {
+                        await navigator.clipboard.writeText(window.location.href);
+                        icon.innerText = 'check';
+                        shareBtn.classList.add('text-primary', 'border-primary');
+                        setTimeout(() => {
+                            icon.innerText = 'share';
+                            shareBtn.classList.remove('text-primary', 'border-primary');
+                        }, 2000);
+                    }
+                } catch (err) {
+                    console.log('Share interaction cancelled or failed.', err);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

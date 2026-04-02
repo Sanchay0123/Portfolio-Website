@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>The C++ Resurgence | Sanchay Jain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#8ff5ff",
+              "secondary": "#ac8aff",
+              "surface-container-low": "#10131a",
+              "surface-container": "#161a21",
+              "surface-container-highest": "#22262f",
+              "surface-bright": "#282c36",
+              "on-surface": "#ecedf6",
+              "surface-variant": "#22262f",
+              "background": "#0b0e14",
+              "on-surface-variant": "#a9abb3",
+              "outline-variant": "#45484f",
+              "on-primary": "#005d63",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+      body { cursor: none; overflow-x: hidden; background-color: #0b0e14; color: #ecedf6; font-family: 'Manrope', sans-serif;}
+      
+      /* Synced Custom Cursor */
+      .custom-cursor {
+          width: 40px; height: 40px;
+          border: 1.5px solid rgba(143, 245, 255, 0.5);
+          background-color: transparent; border-radius: 50%;
+          position: fixed; pointer-events: none; z-index: 9999;
+          transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1), height 0.3s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.3s ease, border 0.3s ease;
+          transform: translate(-50%, -50%);
+      }
+      .custom-cursor-dot {
+          width: 4px; height: 4px; background-color: #8ff5ff; border-radius: 50%;
+          position: fixed; pointer-events: none; z-index: 10000;
+          transform: translate(-50%, -50%); transition: transform 0.3s ease;
+      }
+
+      /* 3D Backgrounds */
+      #bg-canvas {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: -1; pointer-events: none;
+        background: radial-gradient(circle at 50% 50%, #161a21 0%, #0b0e14 100%);
+      }
+      .grid-parallax {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-image: linear-gradient(rgba(143, 245, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(143, 245, 255, 0.03) 1px, transparent 1px);
+        background-size: 80px 80px; background-position: center center;
+        z-index: -1; transform: perspective(1000px) rotateX(20deg) scale(1.5); opacity: 0.5;
+      }
+      
+      /* Article Specific Styling */
+      .article-content p { margin-bottom: 1.5rem; line-height: 1.8; color: #a9abb3; font-size: 1.125rem; }
+      .article-content h2 { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; color: #ecedf6; margin-top: 3rem; margin-bottom: 1rem; letter-spacing: -0.025em; }
+      .article-content h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 600; color: #ecedf6; margin-top: 2rem; margin-bottom: 1rem; }
+      .article-content strong { color: #8ff5ff; font-weight: 600; }
+      .article-content blockquote { border-left: 4px solid #8ff5ff; padding-left: 1.5rem; font-style: italic; margin: 2rem 0; color: #ecedf6; background: rgba(143, 245, 255, 0.05); padding: 1.5rem; border-radius: 0 8px 8px 0;}
+      .article-content code { background-color: #161a21; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; color: #ac8aff; font-size: 0.9em; border: 1px solid rgba(69, 72, 79, 0.3);}
+      .article-content pre { background-color: #10131a; padding: 1.5rem; border-radius: 8px; overflow-x: auto; border: 1px solid #22262f; margin: 2rem 0; }
+      .article-content pre code { background-color: transparent; padding: 0; border: none; color: #ecedf6; }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+
+    <div class="custom-cursor hidden md:block" id="cursor-ring"></div>
+    <div class="custom-cursor-dot hidden md:block" id="cursor-dot"></div>
+    <canvas id="bg-canvas"></canvas>
+    <div class="grid-parallax" id="grid-parallax"></div>
+
+    <nav class="fixed top-0 w-full z-50 bg-[#22262f]/60 backdrop-blur-xl shadow-[0_20px_80px_rgba(236,237,246,0.04)]">
+        <div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-4">
+            <a href="/" class="text-xl font-black tracking-tighter text-[#ecedf6] font-headline interactive-el">SANCHAY JAIN</a>
+            <div class="hidden md:flex gap-10 items-center">
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/">Home</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/projects/">Projects</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#8ff5ff] border-b-2 border-[#8ff5ff] pb-1 mix-blend-difference cursor-none active:scale-95 interactive-el" href="/thoughts/">Thoughts</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/contact/">Contact</a>
+            </div>
+            <a href="/contact/" class="bg-primary text-on-primary px-6 py-2 rounded-md font-headline font-bold text-sm uppercase hover:scale-105 transition-all duration-300 active:scale-95 cursor-none inline-block interactive-el">
+                Contact Me
+            </a>
+        </div>
+    </nav>
+
+    <main class="relative pt-40 pb-32 px-6 max-w-4xl mx-auto z-10">
+        
+        <header class="mb-16">
+            <a href="/thoughts/" class="inline-flex items-center gap-2 text-outline hover:text-primary transition-colors font-label text-xs uppercase tracking-widest mb-12 interactive-el">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Back to Feed
+            </a>
+
+            <div class="flex items-center gap-4 mb-6">
+                <span class="px-3 py-1 bg-surface-container-highest text-primary font-label text-[10px] font-bold uppercase tracking-widest rounded-full">Infrastructure</span>
+                <time class="font-label text-xs font-bold text-on-surface-variant tracking-widest uppercase">September 14, 2024</time>
+                <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                <span class="font-label text-xs font-bold text-secondary tracking-widest uppercase">07 MIN READ</span>
+            </div>
+
+            <h1 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter mb-8 text-on-surface leading-tight">
+                The C++ Resurgence: <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Architectural Bedrock</span>
+            </h1>
+
+            <div class="w-full aspect-[21/9] rounded-2xl overflow-hidden bg-surface-container shadow-2xl border border-outline-variant/20 relative group">
+                <img class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop" alt="Terminal showing low-level C++ code">
+            </div>
+        </header>
+
+        <article class="article-content font-body">
+            <p>If you spend enough time reading tech forums, you might walk away believing that C++ is a dead language, completely superseded by Rust and Go. The narrative is alluring: why risk manual memory management and segfaults when modern compilers can guarantee memory safety at compile time?</p>
+
+            <p>But zoom out from the hype cycle and look at the actual infrastructure powering the global economy. Operating systems, hypervisors, browser engines (V8, WebKit), high-frequency trading platforms, and custom deep packet inspection tools are all unequivocally bound to C++.</p>
+
+            <blockquote>
+                "Rust is safe, but C++ is an architectural bedrock. With modern C++20 features, the language is experiencing a massive renaissance in high-frequency network tooling."
+            </blockquote>
+
+            <h2>The C++20 Paradigm Shift</h2>
+            <p>The argument against C++ usually stems from developers who are still writing C++98. They remember raw pointers, manual <code>new</code> and <code>delete</code> calls, and header file nightmares. They are right to hate that language. But that language effectively doesn't exist anymore in high-end engineering.</p>
+
+            <p>Modern C++ (specifically C++20 and the incoming C++23) has introduced features that fundamentally alter how we write systems-level code:</p>
+
+            <ul>
+                <li><strong>Concepts:</strong> Finally replacing the template metaprogramming nightmare with semantic, compiler-enforced constraints.</li>
+                <li><strong>Modules:</strong> Eradicating the archaic <code>#include</code> model, massively speeding up compile times and resolving macro pollution.</li>
+                <li><strong>Coroutines:</strong> Allowing for highly efficient asynchronous network I/O without the callback hell of the past.</li>
+                <li><strong>Smart Pointers:</strong> <code>std::unique_ptr</code> and <code>std::shared_ptr</code> make memory leaks incredibly difficult to achieve unless you are actively trying to bypass them.</li>
+            </ul>
+
+            <h3>Building the Network Analyzer (NetSpecter)</h3>
+            <p>When architecting a lightweight network traffic analyzer for Linux (like my ongoing <strong>NetSpecter</strong> project), the requirement isn't just safety—it is raw, unadulterated speed. You have to capture, parse, and analyze packets in microseconds before the NIC buffer overflows.</p>
+
+            <p>Here is what modern, safe C++ looks like when handling a packet stream. No raw pointers. No memory leaks. Just zero-cost abstractions:</p>
+
+<pre><code>#include &lt;memory&gt;
+#include &lt;vector&gt;
+#include &lt;concepts&gt;
+
+// C++20 Concept to ensure we only process valid network protocols
+template &lt;typename T&gt;
+concept NetworkProtocol = requires(T a) {
+    { a.parse_header() } -&gt; std::same_as&lt;bool&gt;;
+};
+
+class PacketAnalyzer {
+public:
+    // Using smart pointers for deterministic, safe memory cleanup
+    void ingest_stream(std::unique_ptr&lt;std::vector&lt;uint8_t&gt;&gt; raw_buffer) {
+        if (!raw_buffer) return;
+        
+        // Zero-copy processing logic here
+        process_payload(std::move(raw_buffer));
+    }
+};
+</code></pre>
+
+            <h2>Control vs. Safety</h2>
+            <p>Rust forces you to prove to the compiler that your code is safe before it will let you run it. C++ gives you the tools to write safe code, but trusts that you understand the architecture well enough to know when to break the rules for the sake of performance.</p>
+
+            <p>In cybersecurity and systems engineering, there are moments when you <em>need</em> to break the rules. You need to manipulate raw memory addresses, cast unsafe buffers to structural structs, and interface directly with kernel drivers. </p>
+
+            <p>C++ allows you to build a safe, modern abstraction layer, while still handing you the keys to the hardware when you ask for them. That level of control is why it isn't going anywhere.</p>
+        </article>
+
+        <div class="mt-20 pt-10 border-t border-outline-variant/20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-[#0b0e14] font-headline font-black text-xl">
+                    SJ
+                </div>
+                <div>
+                    <h4 class="font-headline font-bold text-on-surface">Sanchay Jain</h4>
+                    <p class="font-label text-[10px] uppercase tracking-widest text-primary">Infrastructure Engineer</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button id="share-btn" class="interactive-el w-10 h-10 rounded-full border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[20px]">share</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="relative w-full border-t border-[#45484f]/15 bg-[#10131a] z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center px-12 py-20 gap-8 max-w-7xl mx-auto">
+            <div class="flex flex-col gap-2">
+                <div class="font-headline font-black tracking-tighter text-xl text-[#ecedf6]">Sanchay Jain</div>
+                <p class="font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3]">© 2026 SANCHAY JAIN. ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="flex gap-8">
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70" href="https://www.linkedin.com/in/sanchay-jain-5bb117318/">LinkedIn</a>
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70" href="https://github.com/Sanchay0123">GitHub</a>
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors duration-300 active:opacity-70 text-[#8ff5ff]" href="mailto:sanchayjain35@gmail.com">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const ring = document.getElementById('cursor-ring');
+        const dot = document.getElementById('cursor-dot');
+        const interactives = document.querySelectorAll('.interactive-el, a, button');
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const parallaxGrid = document.getElementById('grid-parallax');
+
+        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        let width, height, shapes = [];
+
+        // Track Mouse
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+        });
+
+        // Initialize MICROCHIP / MEMORY BLOCK 3D background elements
+        function init3D() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            shapes = [];
+            // Spawn hardware/data blocks instead of wireframes
+            for(let i = 0; i < 25; i++) { 
+                shapes.push({
+                    x: Math.random() * width, y: Math.random() * height,
+                    size: Math.random() * 50 + 20, 
+                    color: Math.random() > 0.5 ? '#8ff5ff' : '#ac8aff',
+                    speedX: (Math.random() - 0.5) * 0.3, speedY: (Math.random() - 0.5) * 0.3,
+                    rot: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.005,
+                    isFilled: Math.random() > 0.5 // Some blocks are solid, some are hollow
+                });
+            }
+        }
+        window.addEventListener('resize', init3D);
+        init3D();
+
+        // Main Animation Loop
+        function animateEngines() {
+            // Negative Cursor Lerp
+            ringX += (mouseX - ringX) * 0.15; ringY += (mouseY - ringY) * 0.15;
+            ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+
+            // Parallax Grid
+            if (parallaxGrid) {
+                const moveX = (mouseX - window.innerWidth / 2) / 50;
+                const moveY = (mouseY - window.innerHeight / 2) / 50;
+                parallaxGrid.style.transform = `rotateX(${20 + moveY}deg) rotateZ(${-5 + moveX}deg) translate(${moveX * 2}px, ${moveY * 2}px)`;
+            }
+
+            // Hardware Microchip Rendering
+            ctx.clearRect(0, 0, width, height);
+            shapes.forEach(shape => {
+                ctx.save();
+                ctx.translate(shape.x + (mouseX - width/2) * (shape.size * 0.001), shape.y + (mouseY - height/2) * (shape.size * 0.001));
+                ctx.rotate(shape.rot);
+                
+                // Draw Base Square (The Chip)
+                ctx.beginPath();
+                ctx.rect(-shape.size/2, -shape.size/2, shape.size, shape.size);
+                if (shape.isFilled) {
+                    ctx.fillStyle = shape.color;
+                    ctx.globalAlpha = 0.05;
+                    ctx.fill();
+                }
+                ctx.strokeStyle = shape.color;
+                ctx.globalAlpha = 0.2;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Draw inner circuit logic (The Core)
+                ctx.beginPath();
+                ctx.rect(-shape.size/4, -shape.size/4, shape.size/2, shape.size/2);
+                ctx.stroke();
+
+                // Draw connection pins
+                ctx.beginPath();
+                ctx.moveTo(-shape.size/2, 0); ctx.lineTo(-shape.size/4, 0);
+                ctx.moveTo(shape.size/2, 0); ctx.lineTo(shape.size/4, 0);
+                ctx.moveTo(0, -shape.size/2); ctx.lineTo(0, -shape.size/4);
+                ctx.moveTo(0, shape.size/2); ctx.lineTo(0, shape.size/4);
+                ctx.stroke();
+
+                ctx.restore();
+
+                // Update positions for next frame
+                shape.x += shape.speedX; shape.y += shape.speedY; shape.rot += shape.rotSpeed;
+                if(shape.x < -100) shape.x = width + 100;
+                if(shape.x > width + 100) shape.x = -100;
+                if(shape.y < -100) shape.y = height + 100;
+                if(shape.y > height + 100) shape.y = -100;
+            });
+
+            requestAnimationFrame(animateEngines);
+        }
+        animateEngines();
+
+        // Synced Hover Inversion
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                ring.style.width = '80px'; ring.style.height = '80px';
+                ring.style.backgroundColor = '#ffffff'; ring.style.mixBlendMode = 'difference'; 
+                ring.style.borderWidth = '0px'; dot.style.transform = 'translate(-50%, -50%) scale(0)';
+            });
+            el.addEventListener('mouseleave', () => {
+                ring.style.width = '40px'; ring.style.height = '40px';
+                ring.style.backgroundColor = 'transparent'; ring.style.mixBlendMode = 'normal';
+                ring.style.borderColor = 'rgba(143, 245, 255, 0.5)'; ring.style.borderWidth = '1.5px';
+                dot.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+        });
+
+        // Hide off-screen
+        document.addEventListener('mouseleave', () => { ring.style.opacity = '0'; dot.style.opacity = '0'; });
+        document.addEventListener('mouseenter', () => { ring.style.opacity = '1'; dot.style.opacity = '1'; });
+
+        // Share Button Logic (Web Share API + Clipboard Fallback)
+        const shareBtn = document.getElementById('share-btn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', async () => {
+                const shareData = {
+                    title: document.title,
+                    text: 'Check out this architectural breakdown by Sanchay Jain:',
+                    url: window.location.href
+                };
+                const icon = shareBtn.querySelector('span');
+
+                try {
+                    if (navigator.share) {
+                        await navigator.share(shareData);
+                    } else {
+                        await navigator.clipboard.writeText(window.location.href);
+                        icon.innerText = 'check';
+                        shareBtn.classList.add('text-primary', 'border-primary');
+                        setTimeout(() => {
+                            icon.innerText = 'share';
+                            shareBtn.classList.remove('text-primary', 'border-primary');
+                        }, 2000);
+                    }
+                } catch (err) {
+                    console.log('Share interaction cancelled or failed.', err);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
