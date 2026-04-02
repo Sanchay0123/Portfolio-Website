@@ -483,23 +483,61 @@
             });
         });
 
-        // --- 2. Newsletter Logic ---
+        // --- 2. Live Newsletter Logic ---
         const newsBtn = document.getElementById('newsletter-btn');
         const newsInput = document.getElementById('newsletter-input');
         
-        newsBtn.addEventListener('click', () => {
-            if(newsInput.value.includes('@') && newsInput.value.includes('.')) {
-                newsBtn.innerText = 'SUBSCRIBED ✓';
-                newsBtn.classList.add('bg-primary', 'text-[#0b0e14]');
-                newsBtn.classList.remove('text-primary', 'bg-surface-container-highest');
-                newsInput.value = '';
-                
-                setTimeout(() => {
-                    newsBtn.innerText = 'SUBSCRIBE';
-                    newsBtn.classList.remove('bg-primary', 'text-[#0b0e14]');
-                    newsBtn.classList.add('text-primary', 'bg-surface-container-highest');
-                }, 3000);
+        // REPLACE THIS WITH YOUR CLOUDFLARE WORKER URL
+        const WORKER_URL = 'newsletter-gateway.sanchayjain35.workers.dev'; 
+
+        newsBtn.addEventListener('click', async () => {
+            const email = newsInput.value;
+
+            if(email.includes('@') && email.includes('.')) {
+                // Loading State
+                const originalText = newsBtn.innerText;
+                newsBtn.innerText = 'ENCRYPTING...';
+                newsBtn.classList.add('opacity-50');
+                newsBtn.disabled = true;
+
+                try {
+                    const response = await fetch(WORKER_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+
+                    if (response.ok) {
+                        // Success State
+                        newsBtn.innerText = 'SUBSCRIBED ✓';
+                        newsBtn.classList.remove('opacity-50', 'text-primary', 'bg-surface-container-highest');
+                        newsBtn.classList.add('bg-primary', 'text-[#0b0e14]');
+                        newsInput.value = '';
+                        
+                        setTimeout(() => {
+                            newsBtn.innerText = 'SUBSCRIBE';
+                            newsBtn.classList.remove('bg-primary', 'text-[#0b0e14]');
+                            newsBtn.classList.add('text-primary', 'bg-surface-container-highest');
+                            newsBtn.disabled = false;
+                        }, 3000);
+                    } else {
+                        throw new Error('Network response was not ok.');
+                    }
+                } catch (error) {
+                    // Error State (Network failure)
+                    console.error('Handshake failed:', error);
+                    newsBtn.innerText = 'ERROR: RETRY';
+                    newsBtn.classList.remove('opacity-50');
+                    newsBtn.style.color = '#ff716c'; // Error red
+                    
+                    setTimeout(() => {
+                        newsBtn.innerText = 'SUBSCRIBE';
+                        newsBtn.style.color = '';
+                        newsBtn.disabled = false;
+                    }, 3000);
+                }
             } else {
+                // Invalid Email Shake
                 newsInput.style.transform = 'translateX(5px)';
                 setTimeout(() => newsInput.style.transform = 'translateX(-5px)', 50);
                 setTimeout(() => newsInput.style.transform = 'translateX(0)', 100);
