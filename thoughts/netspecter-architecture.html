@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Defending the Wire | Sanchay Jain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#8ff5ff", "secondary": "#ac8aff", "surface-container-low": "#10131a",
+              "surface-container": "#161a21", "on-surface": "#ecedf6", "on-surface-variant": "#a9abb3",
+              "outline-variant": "#45484f", "background": "#0e121a", 
+            },
+            fontFamily: { "headline": ["Space Grotesk"], "body": ["Manrope"] },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+      body { cursor: none; overflow-x: hidden; background-color: #0e121a; color: #ecedf6; font-family: 'Manrope', sans-serif;}
+      .custom-cursor { width: 40px; height: 40px; border: 1.5px solid rgba(143, 245, 255, 0.5); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
+      .custom-cursor-dot { width: 4px; height: 4px; background-color: #8ff5ff; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); }
+      #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.25; }
+      .article-content p { margin-bottom: 1.5rem; line-height: 1.8; color: #a9abb3; font-size: 1.125rem; }
+      .article-content h2 { font-family: 'Space Grotesk', sans-serif; font-size: 2.25rem; font-weight: 700; color: #ecedf6; margin-top: 3.5rem; margin-bottom: 1.25rem; letter-spacing: -0.02em; }
+      .article-content h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 600; color: #8ff5ff; margin-top: 2.5rem; margin-bottom: 1rem; }
+      .article-content blockquote { border-left: 4px solid #8ff5ff; padding: 1.5rem; font-style: italic; margin: 2.5rem 0; background: rgba(143, 245, 255, 0.05); border-radius: 0 12px 12px 0; color: #ecedf6; }
+      .article-content pre { background-color: #10131a; padding: 1.5rem; border-radius: 12px; border: 1px solid #22262f; margin: 2rem 0; position: relative; }
+      .article-content pre::before { content: "KERNEL_SPACE_C"; position: absolute; top: 0; right: 0; padding: 4px 12px; font-size: 10px; background: #22262f; color: #8ff5ff; border-radius: 0 11px 0 11px; font-family: 'Space Grotesk'; }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+    <div class="custom-cursor hidden md:block" id="cursor-ring"></div>
+    <div class="custom-cursor-dot hidden md:block" id="cursor-dot"></div>
+    <canvas id="bg-canvas"></canvas>
+
+
+    <nav class="fixed top-0 w-full z-50 bg-[#22262f]/60 backdrop-blur-xl shadow-[0_20px_80px_rgba(236,237,246,0.04)]">
+        <div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-4">
+            <a href="/" class="text-xl font-black tracking-tighter text-[#ecedf6] font-headline interactive-el">SANCHAY JAIN</a>
+            <div class="hidden md:flex gap-10 items-center">
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/">Home</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/projects/">Projects</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#8ff5ff] border-b-2 border-[#8ff5ff] pb-1 mix-blend-difference cursor-none active:scale-95 interactive-el" href="/thoughts/">Thoughts</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors mix-blend-difference cursor-none active:scale-95 interactive-el" href="/contact/">Contact</a>
+            </div>
+           <a href="/contact/" class="bg-primary text-[#0b0e14] px-6 py-2 rounded-md font-headline font-bold text-sm uppercase hover:scale-105 transition-all interactive-el">Contact</a>
+        </div>
+    </nav>
+   
+
+    <main class="relative pt-40 pb-32 px-6 max-w-4xl mx-auto z-10">
+        <header class="mb-16">
+            <a href="/thoughts/" class="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-label text-xs uppercase tracking-widest mb-12 interactive-el">
+                <span class="material-symbols-outlined text-sm">arrow_back</span> Back to Feed
+            </a>
+            <div class="flex items-center gap-4 mb-6">
+                <span class="px-3 py-1 bg-surface-container-highest text-primary font-label text-[10px] font-bold uppercase tracking-widest rounded-full">Kernel Engineering</span>
+                <time class="font-label text-xs font-bold text-on-surface-variant tracking-widest uppercase">April 17, 2026</time>
+                <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                <span class="font-label text-xs font-bold text-secondary tracking-widest uppercase">09 MIN READ</span>
+            </div>
+            <h1 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter mb-8 text-on-surface leading-tight uppercase">
+                Defending the Wire: <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Bypassing the OS Stack</span>
+            </h1>
+            <div class="w-full aspect-[21/9] rounded-2xl overflow-hidden bg-surface-container shadow-2xl border border-outline-variant/20 relative group">
+                <img class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=2000&auto=format&fit=crop" alt="Kernel-level networking visualization">
+            </div>
+        </header>
+
+        <article class="article-content font-body">
+            <p>In high-frequency network defense, every microsecond is a liability. Standard Linux security tools often fail under volumetric pressure because they operate too high in the stack. By the time a packet reaches <code>iptables</code>, the kernel has already performed expensive memory allocations through the <code>sk_buff</code> data structure.</p>
+            
+            <p><strong>NetSpecter</strong> is my implementation of a low-latency perimeter. By shifting the defense boundary to the Express Data Path (XDP) layer, we can hook into the NIC driver and decide the fate of a packet before it ever formally enters the main kernel networking subsystem.</p>
+
+            <blockquote>
+                "True efficiency isn't just about speed; it's about early rejection. In kernel space, the best way to handle a malicious packet is to ensure it never formally exists in the OS memory."
+            </blockquote>
+
+            <h2>The XDP Advantage</h2>
+            <p>Operating at the driver level allows for "Ghost Mode" functionality. In this mode, NetSpecter doesn't just block a packet; it silently discards it without sending a TCP Reset or ICMP Unreachable response. To an attacker, the target host simply ceases to exist on the network grid.</p>
+
+            <h3>The Driver-Level Hook</h3>
+<pre><code>SEC("xdp_prog")
+int netspecter_ingress(struct xdp_md *ctx) {
+    void *data_end = (void *)(long)ctx->data_end;
+    void *data = (void *)(long)ctx->data;
+    
+    struct ethhdr *eth = data;
+    if (data + sizeof(*eth) > data_end) return XDP_ABORTED;
+
+    struct iphdr *iph = data + sizeof(*eth);
+    if (data + sizeof(*eth) + sizeof(*iph) > data_end) return XDP_PASS;
+
+    // Direct memory lookup in BPF Maps
+    __u32 *is_malicious = bpf_map_lookup_elem(&blacklisted_ips, &iph->saddr);
+    if (is_malicious) {
+        return XDP_DROP; // Ghost Mode: Suppress and drop
+    }
+
+    return XDP_PASS;
+}
+</code></pre>
+
+            <h2>Entropy Scoring in Userspace</h2>
+            <p>While the kernel handles the wire-speed drops, the intelligence lives in userspace. NetSpecter utilizes <strong>Behavioral Entropy Scoring</strong> to identify zero-day threats. We analyze the randomness of incoming payloads—if a payload shows high entropy (suggesting encrypted shellcode) or rhythmic pulsing (suggesting C2 beaconing), the C++ engine updates the BPF maps in real-time.</p>
+
+            <p>This closed-loop system creates an immutable wall. The userspace engine provides the brain, while eBPF provides the muscle, resulting in an IPS capable of 10Gbps throughput without a single context switch for dropped packets.</p>
+        </article>
+
+        <div class="mt-20 pt-10 border-t border-outline-variant/20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-[#0b0e14] font-headline font-black text-xl">SJ</div>
+                <div class="flex flex-col">
+                    <h4 class="font-headline font-bold text-on-surface">Sanchay Jain</h4>
+                    <a href="/contact/" class="font-label text-[10px] uppercase tracking-widest text-primary hover:underline interactive-el">Connect with the Architect</a>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button id="share-btn" class="interactive-el w-10 h-10 rounded-full border border-outline-variant/30 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[20px]">share</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="relative w-full border-t border-[#45484f]/15 bg-[#10131a] z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center px-12 py-20 gap-8 max-w-7xl mx-auto">
+            <div class="flex flex-col gap-2">
+                <div class="font-headline font-black tracking-tighter text-xl text-[#ecedf6]">Sanchay Jain</div>
+                <p class="font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3]">© 2026 SANCHAY JAIN. ALL RIGHTS RESERVED.</p>
+            </div>
+            <div class="flex gap-8">
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors" href="https://www.linkedin.com/in/sanchay-jain-5bb117318/">LinkedIn</a>
+                <a target="_blank" class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#a9abb3] hover:text-[#ac8aff] transition-colors" href="https://github.com/Sanchay0123">GitHub</a>
+                <a class="interactive-el font-['Space_Grotesk'] text-[10px] tracking-[0.1em] uppercase text-[#8ff5ff]" href="mailto:sanchayjain35@gmail.com">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const ring = document.getElementById('cursor-ring');
+        const dot = document.getElementById('cursor-dot');
+        const interactives = document.querySelectorAll('.interactive-el, a, button');
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let mX = 0, mY = 0, rX = 0, rY = 0, width, height, mesh = [];
+
+        document.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; dot.style.left = mX + 'px'; dot.style.top = mY + 'px'; });
+
+        function init3D() {
+            width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight;
+            mesh = [];
+            for(let i = 0; i < 50; i++) mesh.push({ x: Math.random() * width, y: Math.random() * height, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, size: Math.random() * 2 });
+        }
+        window.addEventListener('resize', init3D);
+        init3D();
+
+        function animate() {
+            rX += (mX - rX) * 0.15; rY += (mY - rY) * 0.15;
+            ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = "rgba(143, 245, 255, 0.15)";
+            ctx.fillStyle = "rgba(143, 245, 255, 0.3)";
+            ctx.lineWidth = 0.5;
+            mesh.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < 0 || p.x > width) p.vx *= -1; if(p.y < 0 || p.y > height) p.vy *= -1;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+                for(let j = i+1; j < mesh.length; j++) {
+                    let d = Math.hypot(p.x - mesh[j].x, p.y - mesh[j].y);
+                    if(d < 150) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mesh[j].x, mesh[j].y); ctx.stroke(); }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => { ring.style.width = '80px'; ring.style.height = '80px'; ring.style.backgroundColor = '#ffffff'; ring.style.mixBlendMode = 'difference'; dot.style.opacity = '0'; });
+            el.addEventListener('mouseleave', () => { ring.style.width = '40px'; ring.style.height = '40px'; ring.style.backgroundColor = 'transparent'; ring.style.mixBlendMode = 'normal'; dot.style.opacity = '1'; });
+        });
+
+        document.getElementById('share-btn').addEventListener('click', async () => {
+            const icon = document.getElementById('share-btn').querySelector('span');
+            try {
+                if (navigator.share) {
+                    await navigator.share({ title: document.title, url: window.location.href });
+                } else {
+                    await navigator.clipboard.writeText(window.location.href);
+                    icon.innerText = 'check';
+                    setTimeout(() => icon.innerText = 'share', 2000);
+                }
+            } catch (err) { console.log('Share interaction failed', err); }
+        });
+    </script>
+</body>
+</html>
