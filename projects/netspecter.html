@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>NetSpecter | Sanchay Jain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#8ff5ff",
+              "primary": "#8ff5ff",
+              "secondary": "#ac8aff",
+              "background": "#0b0e14",
+              "surface-container": "#161a21",
+              "surface-container-low": "#10131a",
+              "surface-container-highest": "#22262f",
+              "on-surface": "#ecedf6",
+              "on-surface-variant": "#a9abb3",
+              "outline-variant": "#45484f",
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+        .glass-nav { background: rgba(34, 38, 47, 0.6); backdrop-filter: blur(20px); }
+        .signature-gradient { background: linear-gradient(45deg, #8ff5ff, #ac8aff); }
+        .custom-cursor {
+            width: 40px; height: 40px; border: 1.5px solid rgba(143, 245, 255, 0.5);
+            background: transparent; border-radius: 50%; position: fixed;
+            pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .custom-cursor.active { width: 80px; height: 80px; background: #ffffff; mix-blend-mode: difference; border: 0; }
+        .custom-cursor-dot {
+            width: 4px; height: 4px; background: #8ff5ff; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%) scale(1);
+        }
+        body { cursor: none; overflow-x: hidden; }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+    
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="custom-cursor hidden md:block" id="cursor-ring"></div>
+    <div class="custom-cursor-dot hidden md:block" id="cursor-dot"></div>
+
+    <nav class="fixed top-0 w-full z-50 bg-[#22262f]/60 backdrop-blur-xl shadow-[0_20px_80px_rgba(236,237,246,0.04)]">
+        <div class="flex justify-between items-center max-w-7xl mx-auto px-8 py-4">
+            <a href="/" class="text-xl font-black tracking-tighter text-[#ecedf6] font-headline interactive-el">SANCHAY.JAIN</a>
+            <div class="hidden md:flex gap-10 items-center">
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors interactive-el" href="/">Home</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#8ff5ff] border-b-2 border-[#8ff5ff] pb-1 interactive-el" href="/projects/">Projects</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors interactive-el" href="/thoughts/">Thoughts</a>
+                <a class="nav-link font-headline font-bold tracking-tighter text-sm uppercase text-[#a9abb3] hover:text-[#ecedf6] transition-colors interactive-el" href="/contact/">Contact</a>
+            </div>
+            <a href="/contact/" class="bg-primary text-[#0b0e14] px-6 py-2 rounded-md font-headline font-bold text-sm uppercase hover:scale-105 transition-all duration-300 active:scale-95 interactive-el">
+                Contact Me
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative w-full h-[870px] flex items-end overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0">
+            <img alt="High speed network infrastructure" class="w-full h-full object-cover grayscale opacity-60 mix-blend-luminosity" src="https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=2000"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-8 pb-16 w-full">
+            <div class="flex flex-col gap-4">
+                <span class="font-label text-secondary tracking-[0.2em] uppercase text-xs">Case Study — Kernel-Level IPS</span>
+                <h1 class="font-headline text-5xl md:text-8xl font-black tracking-tighter leading-none max-w-4xl text-on-surface uppercase">
+                    NET<br/>SPECTER
+                </h1>
+                <p class="max-w-xl text-on-surface-variant text-lg font-light leading-relaxed mt-4 mb-6">
+                    A dual-component IPS bridging the gap between Linux Kernel space and Userspace. Utilizing eBPF and XDP for wire-speed threat mitigation at the NIC ring buffer.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://github.com/Sanchay0123/NetSpecter" target="_blank" class="flex items-center gap-2 px-8 py-4 bg-secondary text-[#0b0e14] font-headline font-bold uppercase tracking-wider rounded-md hover:scale-105 transition-transform interactive-el">
+                        View Source Code <span class="material-symbols-outlined">open_in_new</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-8 py-24 space-y-32">
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-12">
+            <div class="md:col-span-7 flex flex-col justify-center">
+                <label class="font-label text-primary tracking-[0.2em] uppercase text-[10px] mb-4">01 // The Bottleneck</label>
+                <h2 class="font-headline text-4xl font-bold tracking-tight mb-8">Bypassing the OS Stack.</h2>
+                <p class="text-on-surface-variant text-lg leading-relaxed mb-6">
+                    Traditional firewalls often operate too high in the networking stack, consuming CPU resources for packets that should have been dropped immediately. NetSpecter attaches directly to the NIC driver, allowing for packet filtering in nanoseconds—before the OS even allocates memory for the traffic via <code>sk_buff</code>.
+                </p>
+                <div class="grid grid-cols-2 gap-8 mt-8">
+                    <div class="p-6 bg-surface-container-low/50 backdrop-blur-md rounded-xl border-l-4 border-secondary">
+                        <span class="block font-headline text-2xl font-bold text-on-surface">Wire-Speed</span>
+                        <span class="text-xs font-label uppercase text-on-surface-variant tracking-wider">XDP_DRV Mode</span>
+                    </div>
+                    <div class="p-6 bg-surface-container-low/50 backdrop-blur-md rounded-xl border-l-4 border-primary">
+                        <span class="block font-headline text-2xl font-bold text-on-surface">Zero-Copy</span>
+                        <span class="text-xs font-label uppercase text-on-surface-variant tracking-wider">eBPF Mapping</span>
+                    </div>
+                </div>
+            </div>
+            <div class="md:col-span-5 relative group">
+                <div class="absolute -inset-4 signature-gradient opacity-20 blur-3xl rounded-full"></div>
+                <div class="relative bg-surface-container/50 backdrop-blur-md p-4 rounded-xl overflow-hidden aspect-square flex items-center justify-center">
+                    <img alt="Digital data transfer" class="w-full h-full object-cover rounded-lg group-hover:scale-110 transition-transform duration-700 opacity-80" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"/>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-12">
+            <div class="text-center max-w-2xl mx-auto">
+                <label class="font-label text-secondary tracking-[0.2em] uppercase text-[10px] mb-4">02 // Operational Matrix</label>
+                <h2 class="font-headline text-4xl font-bold tracking-tight">The Defense Strategy.</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-surface-container/50 backdrop-blur-md p-10 rounded-xl relative overflow-hidden hover:bg-surface-bright/80 transition-colors duration-500 interactive-el">
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">visibility_off</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 uppercase">Ghost Mode</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Suppresses all TCP RST and ICMP responses at the XDP layer. To a malicious scanner, the target host appears completely non-existent on the network grid.</p>
+                </div>
+                <div class="bg-surface-container/50 backdrop-blur-md p-10 rounded-xl relative overflow-hidden hover:bg-surface-bright/80 transition-colors duration-500 interactive-el">
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 uppercase">Entropy Scoring</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Implements real-time statistical entropy analysis of incoming payloads to detect stealthy reconnaissance patterns and zero-day volumetric surges.</p>
+                </div>
+                <div class="bg-surface-container/50 backdrop-blur-md p-10 rounded-xl relative overflow-hidden hover:bg-surface-bright/80 transition-colors duration-500 interactive-el">
+                    <div class="absolute top-0 right-0 p-4 opacity-5">
+                        <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">security</span>
+                    </div>
+                    <h3 class="font-headline text-xl font-bold mb-4 uppercase">Honey Mode</h3>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Asynchronously mirrors malicious payloads to the Userspace engine for DPI without impacting the throughput of the primary data path.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-16">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-8">
+                <div class="max-w-xl">
+                    <label class="font-label text-primary tracking-[0.2em] uppercase text-[10px] mb-4">03 // The Outcome</label>
+                    <h2 class="font-headline text-4xl font-bold tracking-tight">Kernel-Level Immunity.</h2>
+                </div>
+                <div class="flex gap-4">
+                    <span class="bg-surface-container-highest/50 backdrop-blur-md px-4 py-2 rounded-full font-label text-[10px] uppercase text-on-surface-variant tracking-widest flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span> Wire-Speed Verified
+                    </span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-8 h-[600px] rounded-xl overflow-hidden bg-surface-container/50 backdrop-blur-md group interactive-el">
+                    <img alt="Traffic monitoring dashboard" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] opacity-80" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000"/>
+                </div>
+                <div class="md:col-span-4 grid grid-rows-2 gap-8">
+                    <div class="rounded-xl overflow-hidden bg-surface-container/50 backdrop-blur-md group interactive-el">
+                        <img alt="Terminal interface" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-70" src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&q=80&w=1000"/>
+                    </div>
+                    <div class="rounded-xl overflow-hidden bg-surface-container/50 backdrop-blur-md group interactive-el">
+                        <img alt="Network hardware" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] opacity-80" src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=1000"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low/30 backdrop-blur-sm p-16 rounded-3xl border border-outline-variant/10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="md:col-span-1">
+                    <h3 class="font-headline text-2xl font-black tracking-tighter uppercase mb-4">The Stack.</h3>
+                    <p class="text-on-surface-variant text-sm">Low-level C++ and eBPF integration for high-throughput security.</p>
+                </div>
+                <div class="md:col-span-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="font-headline text-2xl font-bold text-secondary">C++20</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">Core Engine</span>
+                        </div>
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="font-headline text-2xl font-bold text-primary">eBPF</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">Kernel Hooks</span>
+                        </div>
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="font-headline text-2xl font-bold text-secondary">XDP</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">Data Path</span>
+                        </div>
+                        <div class="flex flex-col gap-2 p-6 border border-outline-variant/15 rounded-xl bg-surface-container/50 backdrop-blur-md interactive-el">
+                            <span class="material-symbols-outlined text-primary">terminal</span>
+                            <span class="font-label text-xs font-bold tracking-widest uppercase mt-2 text-on-surface-variant">System Internals</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pt-24 flex flex-col md:flex-row justify-between items-center gap-12 border-t border-outline-variant/10">
+            <a class="group flex items-center gap-6 interactive-el" href="/projects/">
+                <div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                </div>
+                <div>
+                    <span class="block font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Back to Gallery</span>
+                    <span class="block font-headline font-bold text-lg group-hover:text-primary transition-colors">All Projects</span>
+                </div>
+            </a>
+            
+            <a class="group flex items-center text-right gap-6 interactive-el" href="/projects/scram.html">
+                <div>
+                    <span class="block font-label text-[10px] text-on-surface-variant tracking-widest uppercase">Next Project</span>
+                    <span class="block font-headline font-bold text-lg group-hover:text-secondary transition-colors">S.C.R.A.M</span>
+                </div>
+                <div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-secondary transition-colors">
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+            </a>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // --- RESTORED PARTICLE SYSTEM (Original Packet-style) ---
+        const canvas = document.getElementById('bg-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        for (let i = 0; i < 2000; i++) {
+            vertices.push(THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(20), THREE.MathUtils.randFloatSpread(20));
+        }
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const material = new THREE.PointsMaterial({ color: 0x8ff5ff, size: 0.02 });
+        const points = new THREE.Points(geometry, material);
+        scene.add(points);
+
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            points.rotation.y += 0.001;
+            points.rotation.x += 0.0005;
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- Custom Cursor ---
+        const ring = document.getElementById('cursor-ring');
+        const dot = document.getElementById('cursor-dot');
+        const interactives = document.querySelectorAll('.interactive-el, a, button');
+        let tX = 0, tY = 0, rX = 0, rY = 0;
+
+        document.addEventListener('mousemove', e => {
+            tX = e.clientX; tY = e.clientY;
+            dot.style.left = tX + 'px'; dot.style.top = tY + 'px';
+        });
+
+        function updateRing() {
+            rX += (tX - rX) * 0.15; rY += (tY - rY) * 0.15;
+            ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
+            requestAnimationFrame(updateRing);
+        }
+        updateRing();
+
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => ring.classList.add('active'));
+            el.addEventListener('mouseleave', () => ring.classList.remove('active'));
+        });
+    </script>
+</body>
+</html>
